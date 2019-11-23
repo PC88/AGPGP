@@ -20,7 +20,7 @@
 #include "SobelDemo.h"
 // Umar Demo
 #include "MonoChromDemo.h"
-// Sam Demo
+// Matt Demo
 #include "ChromFresnelDemo.h"
 
 
