@@ -16,7 +16,13 @@
 // demos
 #include "Demo.h"
 #include "DemoManager.h"
+// Peter Demo
 #include "SobelDemo.h"
+// Umar Demo
+#include "MonoChromDemo.h"
+// Sam Demo
+#include "ChromFresnelDemo.h"
+
 
 // Timer
 #include "Timer.h"
@@ -53,8 +59,10 @@ int main(int argc, char *argv[])
 	DemoManager* demoManager = new DemoManager(currentDemo);
 	currentDemo = demoManager;
 
-	/// Individual project Demo ///
+	/// group project Demos ///
 	demoManager->RegisterDemo<SobelDemo>("Sobel Demo");
+	demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
+	demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
 
 
 	// Timer - PC
