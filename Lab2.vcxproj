@@ -21,6 +21,8 @@
   <ItemGroup>
     <None Include="Res\Shaders\phong-tex.frag" />
     <None Include="Res\Shaders\phong-tex.vert" />
+    <None Include="Res\Shaders\reflect.frag" />
+    <None Include="Res\Shaders\reflect.vert" />
     <None Include="Res\Shaders\Sobel.frag" />
     <None Include="Res\Shaders\Sobel.vert" />
     <None Include="Res\Shaders\textured.frag" />
