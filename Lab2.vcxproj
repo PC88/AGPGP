@@ -48,6 +48,7 @@
     <ClInclude Include="Src\Timer\HPTimer.h" />
     <ClInclude Include="Src\Timer\LPTimer.h" />
     <ClInclude Include="Src\Timer\Timer.h" />
+    <ClInclude Include="Src\Demos\TestDemo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Demos\ChromFresnelDemo.cpp" />
@@ -68,6 +69,7 @@
     <ClCompile Include="Src\Timer\HPTimer.cpp" />
     <ClCompile Include="Src\Timer\LPTimer.cpp" />
     <ClCompile Include="Src\Timer\Timer.cpp" />
+    <ClCompile Include="Src\Demos\TestDemo.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

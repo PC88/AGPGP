@@ -25,12 +25,15 @@ ChromFresnelDemo::ChromFresnelDemo()
 	rt3d::setLight(reflectProgram, light0);
 	rt3d::setMaterial(reflectProgram, material0_matt);
 
+	textures[0] = loadBitmap("Res\\images\\fabric.bmp");
+	textures[1] = loadBitmap("Res\\images\\studdedmetal.bmp");
+
 	uniformIndex = glGetUniformLocation(reflectProgram, "cubeMap");
 	glUniform1i(uniformIndex, 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textures[2]);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
 	textureProgram = rt3d::initShaders("Res\\Shaders\\textured.vert", "Res\\Shaders\\textured.frag");
 	skyboxProgram = rt3d::initShaders("Res\\Shaders\\cubeMap.vert", "Res\\Shaders\\cubeMap.frag");
@@ -42,10 +45,7 @@ ChromFresnelDemo::ChromFresnelDemo()
 	vector<GLuint> indices;
 	rt3d::loadObj("Res\\Models\\cube.obj", verts, norms, tex_coords, indices);
 	meshIndexCount = indices.size();
-	textures[0] = loadBitmap("Res\\images\\fabric.bmp");
 	meshObjects[0] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), tex_coords.data(), meshIndexCount, indices.data());
-
-	textures[1] = loadBitmap("Res\\images\\studdedmetal.bmp");
 
 
 	verts.clear(); norms.clear(); tex_coords.clear(); indices.clear();
@@ -146,30 +146,19 @@ void ChromFresnelDemo::Render()
 	// back to remainder of rendering
 	glDepthMask(GL_TRUE); // make sure depth test is on
 
-	glUseProgram(shaderProgram);
-	rt3d::setUniformMatrix4fv(shaderProgram, "projection", glm::value_ptr(projection));
-
-	glm::vec4 tmp = mvStack.top()*lightPos;
-	light0.position[0] = tmp.x;
-	light0.position[1] = tmp.y;
-	light0.position[2] = tmp.z;
-	rt3d::setLightPos(shaderProgram, glm::value_ptr(tmp));
-
-
-	// draw a small cube block at lightPos
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	mvStack.push(mvStack.top());
-	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(lightPos[0], lightPos[1], lightPos[2]));
-	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(0.25f, 0.25f, 0.25f));
-	rt3d::setUniformMatrix4fv(shaderProgram, "modelview", glm::value_ptr(mvStack.top()));
-	rt3d::setMaterial(shaderProgram, material0_matt);
-	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
-	mvStack.pop();
-
-	cubeDraw(tmp, projection);
+	cubeDraw(projection);
 		// remember to use at least one pop operation per push...
 	mvStack.pop(); // initial matrix
-	glDepthMask(GL_TRUE);
+
+	// draw a cube for ground plane
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-10.0f, -0.1f, -10.0f));
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(20.0f, 20.0f, 20.0f));
+	rt3d::setUniformMatrix4fv(shaderProgram, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(shaderProgram, material0);
+	rt3d::drawIndexedMesh(meshObjects[2], meshIndexCount, GL_TRIANGLES);
+	mvStack.pop();
 }
 
 glm::vec3 ChromFresnelDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
@@ -262,10 +251,11 @@ GLuint ChromFresnelDemo::loadCubeMap(const char * fname[6], GLuint * texID)
 	return *texID;	// return value of texure ID, redundant really
 }
 
-void ChromFresnelDemo::cubeDraw(glm::vec4 & tmp, glm::mat4 & projection)
+void ChromFresnelDemo::cubeDraw(glm::mat4 & projection)
 {
 	glUseProgram(reflectProgram);
 	glm::mat4 modelMatrix(1.0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
 	mvStack.push(mvStack.top());
 	modelMatrix = glm::translate(modelMatrix, glm::vec3(-2.0f, 1.0f, -3.0f));
 	modelMatrix = glm::rotate(modelMatrix, float(theta*DEG_TO_RADIAN), glm::vec3(1.0f, 1.0f, 1.0f));

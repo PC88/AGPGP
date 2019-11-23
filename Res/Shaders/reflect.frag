@@ -33,11 +33,11 @@ void main(void)
 
 	vec3 viewVector = normalize(-ex_WorldView);
 	float refractive =  dot(viewVector, normalize(ex_WorldNorm));
-	refractive = pow(refractive, 5.0);
+	//refractive = pow(refractive, 5.0);
 
 	
 	//out_Color = reflectColor;
 	//out_Color = refractColor;
-		out_Color = mix(refract1,reflectColor,refractive);
+		out_Color = mix(refractColor,reflectColor,refractive);
 
 }

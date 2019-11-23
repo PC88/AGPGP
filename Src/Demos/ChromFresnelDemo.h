@@ -33,7 +33,7 @@ public:
 
 	GLuint loadBitmap(const char *fname);
 	GLuint loadCubeMap(const char *fname[6], GLuint *texID);
-	void cubeDraw(glm::vec4 &tmp, glm::mat4 &projection);
+	void cubeDraw(glm::mat4 &projection);
 
 private:
 	GLfloat offset;
@@ -47,6 +47,12 @@ private:
 	GLuint shaderProgram;
 	GLuint skyboxProgram;
 
+	rt3d::materialStruct material0 = {
+		{0.2f, 0.4f, 0.2f, 1.0f}, // ambient
+		{0.5f, 1.0f, 0.5f, 1.0f}, // diffuse
+		{0.0f, 0.1f, 0.0f, 1.0f}, // specular
+		2.0f  // shininess
+	};
 	GLuint reflectProgram;
 
 	GLuint gouraud;
