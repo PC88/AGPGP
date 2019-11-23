@@ -470,33 +470,6 @@ cubeDraw(tmp, projection);
 }
 
 
-	
-
-	
-	
-
-
-
-
-
-	
-
-
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
 void cubeDraw(glm::vec4 &tmp, glm::mat4 &projection)
 {
 	glUseProgram(reflectProgram);
