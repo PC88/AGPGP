@@ -74,6 +74,12 @@
     <ClInclude Include="Src\Demos\SobelDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Demos\MonoChromDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Demos\ChromFresnelDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -122,6 +128,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Demos\SobelDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Demos\MonoChromDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Demos\ChromFresnelDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

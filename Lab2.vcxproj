@@ -27,6 +27,7 @@
     <None Include="Res\Shaders\textured.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Demos\ChromFresnelDemo.h" />
     <ClInclude Include="Dependencies\imgui\imgui.h" />
     <ClInclude Include="Dependencies\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="Dependencies\imgui\imgui_impl_sdl.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="Dependencies\imgui\imstb_rectpack.h" />
     <ClInclude Include="Dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="Dependencies\imgui\imstb_truetype.h" />
+    <ClInclude Include="Src\Demos\MonoChromDemo.h" />
     <ClInclude Include="Src\Demos\SobelDemo.h" />
     <ClInclude Include="Src\Demos\Demo.h" />
     <ClInclude Include="Src\Demos\DemoManager.h" />
@@ -46,6 +48,7 @@
     <ClInclude Include="Src\Timer\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Demos\ChromFresnelDemo.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui_draw.cpp" />
@@ -53,6 +56,7 @@
     <ClCompile Include="Dependencies\imgui\imgui_impl_sdl.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Src\Demos\MonoChromDemo.cpp" />
     <ClCompile Include="Src\Demos\SobelDemo.cpp" />
     <ClCompile Include="Src\Demos\Demo.cpp" />
     <ClCompile Include="Src\Demos\DemoManager.cpp" />
