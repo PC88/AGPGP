@@ -242,7 +242,7 @@ void init(void) {
 	
 
 const char *cubeTexFiles[6] = {
-		"Town-skybox/back.bmp", "Town-skybox/front.bmp", "Town-skybox/right.bmp", "Town-skybox/left.bmp", "Town-skybox/top.bmp", "Town-skybox/bottom.bmp"
+		"Town-skybox1/back.bmp", "Town-skybox1/front.bmp", "Town-skybox1/right.bmp", "Town-skybox1/left.bmp", "Town-skybox1/top.bmp", "Town-skybox1/bottom.bmp"
 	};
 	loadCubeMap(cubeTexFiles, &skybox[0]);
 	reflectProgram = rt3d::initShaders("reflect.vert", "reflect.frag");
