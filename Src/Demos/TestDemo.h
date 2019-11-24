@@ -47,6 +47,10 @@ private:
 
 	GLfloat rotation = 0.0f;
 
+	GLfloat ratioR = 1.35;
+	GLfloat ratioG = 1.36;
+	GLfloat ratioB = 1.37;
+
 	// TEXTURE STUFF
 	GLuint textures[3];
 	GLuint skybox[5];

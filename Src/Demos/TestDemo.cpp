@@ -19,19 +19,27 @@ TestDemo::TestDemo()
 	uniformIndex = glGetUniformLocation(shaderProgram, "attQuadratic");
 	glUniform1f(uniformIndex, attQuadratic);
 
-	// init shader
-
-	skyboxProgram = rt3d::initShaders("Res\\Shaders\\cubeMap.vert", "Res\\Shaders\\cubeMap.frag");
-	ReflectRefractProg = rt3d::initShaders("Res\\Shaders\\reflectionMap.vert", "Res\\Shaders\\reflectionMap.frag");
-	rt3d::setLight(ReflectRefractProg, light0);
-	rt3d::setMaterial(ReflectRefractProg, material0);
-
 	const char *cubeTexFiles[6] =
 	{
 		"Res\\images\\hw_nightsky\\nightsky_bk.bmp", "Res\\images\\hw_nightsky\\nightsky_ft.bmp", "Res\\images\\hw_nightsky\\nightsky_rt.bmp",
 		"Res\\images\\hw_nightsky\\nightsky_lf.bmp", "Res\\images\\hw_nightsky\\nightsky_up.bmp", "Res\\images\\hw_nightsky\\nightsky_dn.bmp"
 	};
 	rt3d::loadCubeMap(cubeTexFiles, &skybox[0]);
+
+	// init shader
+
+	skyboxProgram = rt3d::initShaders("Res\\Shaders\\cubeMap.vert", "Res\\Shaders\\cubeMap.frag");
+	ReflectRefractProg = rt3d::initShaders("Res\\Shaders\\reflect.vert", "Res\\Shaders\\reflect.frag");
+	rt3d::setLight(ReflectRefractProg, light0);
+	rt3d::setMaterial(ReflectRefractProg, material0);
+
+	uniformIndex = glGetUniformLocation(ReflectRefractProg, "cubeMap");
+	glUniform1i(uniformIndex, 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
 
 	// load the cube model
 	vector<GLfloat> verts;
@@ -71,6 +79,15 @@ void TestDemo::Update(double interval)
 
 	if (keys[SDL_SCANCODE_COMMA]) rotation -= 1.0f;
 	if (keys[SDL_SCANCODE_PERIOD]) rotation += 1.0f;
+
+	if (keys[SDL_SCANCODE_2]) ratioR += 0.01f;
+	if (keys[SDL_SCANCODE_3]) ratioR -= 0.01f;
+
+	if (keys[SDL_SCANCODE_4]) ratioG += 0.01f;
+	if (keys[SDL_SCANCODE_5]) ratioG -= 0.01f;
+
+	if (keys[SDL_SCANCODE_6]) ratioB += 0.01f;
+	if (keys[SDL_SCANCODE_7]) ratioB -= 0.01f;
 
 	if (keys[SDL_SCANCODE_1]) 
 	{
@@ -155,7 +172,7 @@ void TestDemo::Render()
 	mvStack.pop();
 
 	/// draw cube to be MAPPED
-	glUseProgram(ReflectRefractProg);
+	/*glUseProgram(ReflectRefractProg);
 	rt3d::setUniformMatrix4fv(ReflectRefractProg, "projection", glm::value_ptr(projection));
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	mvStack.push(mvStack.top());
@@ -165,6 +182,32 @@ void TestDemo::Render()
 	rt3d::setMaterial(ReflectRefractProg, material0);
 	int ID = glGetUniformLocation(ReflectRefractProg, "cameraPos");
 	glUniform3f(ID, eye.x, eye.y, eye.z);
+	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
+	mvStack.pop();*/
+
+
+	glUseProgram(ReflectRefractProg);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(10.0f, 10.0f, 10.0f));
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-2.0f, 1.0f, -3.0f));
+
+	int uniformIndex = glGetUniformLocation(ReflectRefractProg, "modelMatrix");
+	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniform3fv(uniformIndex, 1, glm::value_ptr(mvStack.top()));
+	rt3d::setUniformMatrix4fv(ReflectRefractProg, "projection", glm::value_ptr(projection));
+
+	uniformIndex = glGetUniformLocation(ReflectRefractProg, "cameraPos");
+	glUniform3fv(uniformIndex, 1, glm::value_ptr(eye));
+
+	uniformIndex = glGetUniformLocation(ReflectRefractProg, "ratioR");
+	glUniform1f(uniformIndex, ratioR);
+	uniformIndex = glGetUniformLocation(ReflectRefractProg, "ratioG");
+	glUniform1f(uniformIndex, ratioG);
+	uniformIndex = glGetUniformLocation(ReflectRefractProg, "ratioB");
+	glUniform1f(uniformIndex, ratioB);
+	rt3d::setUniformMatrix4fv(ReflectRefractProg, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(ReflectRefractProg, material1);
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
 }
