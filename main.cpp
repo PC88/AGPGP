@@ -23,12 +23,14 @@
 // Matt Demo
 #include "ChromFresnelDemo.h"
 
-
-// Timer
+// general timer
 #include "Timer.h"
-#include "LPTimer.h"
 #include "HPTimer.h"
+#include "LPTimer.h"
 
+//instrumentor and its timer
+#include "Instrumentor.h"
+#include "InstrumentationTimer.h"
 
 // Program entry point - SDL manages the actual WinMain entry point for us
 int main(int argc, char *argv[]) 
