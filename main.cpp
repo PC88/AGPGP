@@ -22,6 +22,7 @@
 #include "MonoChromDemo.h"
 // Sam Demo
 #include "ChromFresnelDemo.h"
+#include "TestDemo.h"
 
 // test initial commit to branch
 // Timer
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
 	demoManager->RegisterDemo<SobelDemo>("Sobel Demo");
 	demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
 	demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
+	demoManager->RegisterDemo<TestDemo>("Test Demo");
 
 
 	// Timer - PC
