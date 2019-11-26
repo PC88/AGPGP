@@ -13,12 +13,12 @@
 
 using namespace std;
 
-class SobelDemo :
+class ThreadedKernelDemo :
 	public Demo
 {
 public:
-	SobelDemo();
-	virtual ~SobelDemo();
+	ThreadedKernelDemo();
+	virtual ~ThreadedKernelDemo();
 
 
 	virtual void Update(double interval) override;

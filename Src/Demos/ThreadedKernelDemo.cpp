@@ -1,11 +1,11 @@
-#include "SobelDemo.h"
+#include "ThreadedKernelDemo.h"
 #include "vector"
 #include "rt3dObjLoader.h"
 #include "imgui.h"
 
 
 
-SobelDemo::SobelDemo()
+ThreadedKernelDemo::ThreadedKernelDemo()
 {
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
@@ -27,7 +27,7 @@ SobelDemo::SobelDemo()
 	rt3d::setMaterial(SobelShaderProgram, material0);
 
 	// iniit the quad shader
-	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\FBOtest.vert", "Res\\Shaders\\FBOtest.frag");
+	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\KernelSharpen.vert", "Res\\Shaders\\KernelSharpen.frag");
 
 	lightProgram = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
 
@@ -137,12 +137,12 @@ SobelDemo::SobelDemo()
 }
 
 
-SobelDemo::~SobelDemo()
+ThreadedKernelDemo::~ThreadedKernelDemo()
 {
 	glDeleteFramebuffers(1, &fboID);
 }
 
-void SobelDemo::Update(double interval)
+void ThreadedKernelDemo::Update(double interval)
 {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if (keys[SDL_SCANCODE_W]) eye = moveForward(eye, rotation, 0.1f);
@@ -174,7 +174,7 @@ void SobelDemo::Update(double interval)
 	}
 }
 
-void SobelDemo::ImGuiRender()
+void ThreadedKernelDemo::ImGuiRender()
 {
 	ImGui::Begin("Demos");
 	ImGui::SliderFloat("Hermite interpolation 1", &Herp1, 0.0f, 1.0f);
@@ -187,7 +187,7 @@ void SobelDemo::ImGuiRender()
 	ImGui::End();
 }
 
-void SobelDemo::Render()
+void ThreadedKernelDemo::Render()
 {
 
 	// bind to framebuffer and draw scene as we normally would to color texture 
@@ -282,25 +282,19 @@ void SobelDemo::Render()
 	uniformIndex = glGetUniformLocation(screenTexShaderProgram, "herp2");
 	glUniform1f(uniformIndex, Herp2);
 
-	GLenum err;
-	while ((err = glGetError()) != GL_NO_ERROR)
-	{
-		std::cout << glGetError() << std::endl;
-	}
-	// enable
 	glDrawBuffers(2, fboAttachments);
 	glBindVertexArray(quadVAO);
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-glm::vec3 SobelDemo::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
+glm::vec3 ThreadedKernelDemo::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
 	return glm::vec3(pos.x + d * std::sin(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z - d * std::cos(rotation * DEG_TO_RADIAN));
 }
 
-glm::vec3 SobelDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
+glm::vec3 ThreadedKernelDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
 	return glm::vec3(pos.x + d * std::cos(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z + d * std::sin(rotation * DEG_TO_RADIAN));

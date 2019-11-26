@@ -17,7 +17,7 @@
 #include "Demo.h"
 #include "DemoManager.h"
 // Peter Demo
-#include "SobelDemo.h"
+#include "ThreadedKernelDemo.h"
 // Umar Demo
 #include "MonoChromDemo.h"
 #include "TestDemo.h"
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	currentDemo = demoManager;
 
 	/// group project Demos ///
-	demoManager->RegisterDemo<SobelDemo>("Sobel Threaded Demo");
+	demoManager->RegisterDemo<ThreadedKernelDemo>("Sobel Threaded Demo");
 	demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
 	demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
 	demoManager->RegisterDemo<TestDemo>("Test Demo");
