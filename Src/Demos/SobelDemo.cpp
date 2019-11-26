@@ -7,6 +7,8 @@
 
 SobelDemo::SobelDemo()
 {
+	// enable MSAA
+	glEnable(GL_MULTISAMPLE);
 	// initialize the shaders
 	shaderProgram = rt3d::initShaders("Res\\Shaders\\phong-tex.vert", "Res\\Shaders\\phong-tex.frag");
 	rt3d::setLight(shaderProgram, light0);

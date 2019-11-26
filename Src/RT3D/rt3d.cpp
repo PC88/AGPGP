@@ -375,6 +375,8 @@ SDL_Window* setupRC(SDL_GLContext &context)
 
 	context = SDL_GL_CreateContext(window); // Create opengl context and attach to window
 	SDL_GL_SetSwapInterval(1); // set swap buffers to sync with monitor's vertical refresh rate
+
+
 	return window;
 }
 
