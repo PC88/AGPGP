@@ -10,12 +10,12 @@
 
 using namespace std;
 
-class SobelDemo :
+class SobelBloomDemo :
 	public Demo
 {
 public:
-	SobelDemo();
-	virtual ~SobelDemo();
+	SobelBloomDemo();
+	virtual ~SobelBloomDemo();
 
 
 	virtual void Update(double interval) override;
@@ -40,6 +40,7 @@ private:
 	// shader handles
 	GLuint SobelShaderProgram;
 	GLuint shaderProgram;
+	GLuint blurrProgram;
 
 	GLfloat rotation = 0.0f;
 
@@ -49,13 +50,13 @@ private:
 	GLuint labels[5];
 
 	rt3d::lightStruct light0 = {
-		{0.4f, 0.4f, 0.4f, 1.0f}, // ambient
-		{1.0f, 1.0f, 1.0f, 1.0f}, // diffuse
-		{1.0f, 1.0f, 1.0f, 1.0f}, // specular
-		{-5.0f, 2.0f, 2.0f, 1.0f}  // position
+		{1.0f, 1.0f, 1.0f, 1.0f}, // ambient
+		{10.1f, 10.0f, 10.0f, 1.0f}, // diffuse
+		{1.0f, 1.0f, 1.2f, 1.0f}, // specular
+		{0.0f, 2.0f, -40.0f, 1.0f}  // position
 	};
 
-	glm::vec4 lightPos = glm::vec4(-5.0f, 2.0f, 2.0f, 1.0f); //light position
+	glm::vec4 lightPos = glm::vec4(0.0f, 2.0f, -20.0f, 1.0f); //light position
 
 	rt3d::materialStruct material0 = {
 		{0.2f, 0.4f, 0.2f, 1.0f}, // ambient
@@ -79,15 +80,17 @@ private:
 
 	/// FBO details ///
 	GLuint fboID;
+	GLuint PingPongFBOs[2];
+	GLuint PingPongBuffers[2];
 	GLuint depthStencilBufID;
-	GLuint screenTex;
+	GLuint screenTextures[2]; // these are the colour Buffers for the bloom effect
 	GLuint screenWidth = 800;
 	GLuint screenHeight = 600;
-	const GLenum fboAttachments[1] = { GL_COLOR_ATTACHMENT0 }; // color buffer attachment
+	const GLenum fboAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; // color buffer attachment
 	const GLenum frameBuff[1] = { GL_BACK_LEFT }; // back buffer FBO attachment
 
 	// data for the quad which is drawn as a lens
-	GLuint screenTexShaderProgram;
+	GLuint screenTexturesShaderProgram;
 
 	// uniform interactive variables
 	float edgeColor[3] = { 1.0f, 1.0f, 1.0f };

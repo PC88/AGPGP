@@ -19,8 +19,6 @@
     <None Include="Res\Shaders\textured.frag" />
     <None Include="Res\Shaders\phong-tex.vert" />
     <None Include="Res\Shaders\phong-tex.frag" />
-    <None Include="Res\Shaders\Sobel.vert" />
-    <None Include="Res\Shaders\Sobel.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\RT3D\rt3dObjLoader.h">
@@ -62,9 +60,6 @@
     <ClInclude Include="Dependencies\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Demos\SobelDemo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Demos\MonoChromDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,6 +79,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Timer\HPTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Demos\SobelBloomDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -124,9 +122,6 @@
     <ClCompile Include="Dependencies\imgui\imgui_impl_sdl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Demos\SobelDemo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Demos\MonoChromDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -146,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Timer\HPTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Demos\SobelBloomDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

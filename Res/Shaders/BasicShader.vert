@@ -2,10 +2,7 @@
 
 // standard vertex data
 uniform mat4 modelview;
-uniform mat4 modelviewproj;
 uniform mat4 projection;
-uniform vec4 lightPosition;
-uniform mat3 normalMatrix;
 
 // the input values
 in vec3 in_Normal;
@@ -18,21 +15,6 @@ out vec2 ex_TexCoord;
 
 // pass out color
 out vec4 ex_Color;
-
-struct lightStruct
-{
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-};
-
-struct materialStruct
-{
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	float shininess;
-};
 
 void main(void) 
 {

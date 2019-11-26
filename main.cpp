@@ -17,7 +17,7 @@
 #include "Demo.h"
 #include "DemoManager.h"
 // Peter Demo
-#include "SobelDemo.h"
+#include "SobelBloomDemo.h"
 // Umar Demo
 #include "MonoChromDemo.h"
 // Matt Demo
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	currentDemo = demoManager;
 
 	/// group project Demos ///
-	demoManager->RegisterDemo<SobelDemo>("Sobel Demo");
+	demoManager->RegisterDemo<SobelBloomDemo>("Sobel Bloom Demo");
 	demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
 	demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
 

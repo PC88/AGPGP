@@ -21,12 +21,11 @@
   <ItemGroup>
     <None Include="Res\Shaders\phong-tex.frag" />
     <None Include="Res\Shaders\phong-tex.vert" />
-    <None Include="Res\Shaders\Sobel.frag" />
-    <None Include="Res\Shaders\Sobel.vert" />
     <None Include="Res\Shaders\textured.frag" />
     <None Include="Res\Shaders\textured.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Demos\SobelBloomDemo.h" />
     <ClInclude Include="Src\Profiler\InstrumentationTimer.h" />
     <ClInclude Include="Src\Profiler\Instrumentor.h" />
     <ClInclude Include="Src\Demos\ChromFresnelDemo.h" />
@@ -38,7 +37,6 @@
     <ClInclude Include="Dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="Dependencies\imgui\imstb_truetype.h" />
     <ClInclude Include="Src\Demos\MonoChromDemo.h" />
-    <ClInclude Include="Src\Demos\SobelDemo.h" />
     <ClInclude Include="Src\Demos\Demo.h" />
     <ClInclude Include="Src\Demos\DemoManager.h" />
     <ClInclude Include="Src\RT3D\anorms.h" />
@@ -50,6 +48,7 @@
     <ClInclude Include="Src\Timer\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Demos\SobelBloomDemo.cpp" />
     <ClCompile Include="Src\Profiler\InstrumentationTimer.cpp" />
     <ClCompile Include="Src\Profiler\Instrumentor.cpp" />
     <ClCompile Include="Src\Demos\ChromFresnelDemo.cpp" />
@@ -61,7 +60,6 @@
     <ClCompile Include="Dependencies\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Src\Demos\MonoChromDemo.cpp" />
-    <ClCompile Include="Src\Demos\SobelDemo.cpp" />
     <ClCompile Include="Src\Demos\Demo.cpp" />
     <ClCompile Include="Src\Demos\DemoManager.cpp" />
     <ClCompile Include="Src\RT3D\md2model.cpp" />
