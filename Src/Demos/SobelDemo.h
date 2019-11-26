@@ -43,6 +43,7 @@ private:
 	// shader handles
 	GLuint SobelShaderProgram;
 	GLuint shaderProgram;
+	GLuint lightProgram;
 
 	GLfloat rotation = 0.0f;
 
@@ -50,6 +51,8 @@ private:
 	GLuint textures[3];
 	GLuint skybox[5];
 	GLuint labels[5];
+
+	glm::vec4 AmbientLight = glm::vec4(4.0f, 3.0f, 0.3f, 1.0f);
 
 	rt3d::lightStruct light0 = {
 		{0.4f, 0.4f, 0.4f, 1.0f}, // ambient
@@ -86,7 +89,7 @@ private:
 	GLuint screenTex;
 	GLuint screenWidth = 800;
 	GLuint screenHeight = 600;
-	const GLenum fboAttachments[1] = { GL_COLOR_ATTACHMENT0 }; // color buffer attachment
+	const GLenum fboAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; // color buffer attachment
 	const GLenum frameBuff[1] = { GL_BACK_LEFT }; // back buffer FBO attachment
 
 	// data for the quad which is drawn as a lens

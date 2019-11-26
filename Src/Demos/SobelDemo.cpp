@@ -22,12 +22,15 @@ SobelDemo::SobelDemo()
 	glUniform1f(uniformIndex, attQuadratic);
 
 	// init Sobel shader
-	SobelShaderProgram = rt3d::initShaders("Res\\Shaders\\Sobel.vert", "Res\\Shaders\\Sobel.frag");
+	SobelShaderProgram = rt3d::initShaders("Res\\Shaders\\BasicShader.vert", "Res\\Shaders\\BasicShader.frag");
 	rt3d::setLight(SobelShaderProgram, light0);
 	rt3d::setMaterial(SobelShaderProgram, material0);
 
 	// iniit the quad shader
 	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\FBOtest.vert", "Res\\Shaders\\FBOtest.frag");
+
+	lightProgram = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
+
 	// load the cube model
 	vector<GLfloat> verts;
 	vector<GLfloat> norms;
@@ -144,6 +147,10 @@ void SobelDemo::ImGuiRender()
 	ImGui::SliderFloat("Hermite interpolation 1", &Herp1, 0.0f, 1.0f);
 	ImGui::SliderFloat("Hermite interpolation 2", &Herp2, 0.0f, 1.0f);
 	ImGui::SliderFloat3("Edge Colour values", edgeColor, 0.0f, 1.0f);
+
+	ImGui::SliderFloat("Red Light Value", &AmbientLight.x, 0.0f, 10.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+	ImGui::SliderFloat("Green Light Value", &AmbientLight.y, 0.0f, 10.0f);
+	ImGui::SliderFloat("Blue Light Value", &AmbientLight.z, 0.0f, 10.0f);
 	ImGui::End();
 }
 
@@ -201,6 +208,17 @@ void SobelDemo::Render()
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
 
+	glUseProgram(lightProgram);
+	// draw a small cube block at lightPos
+	rt3d::setUniformMatrix4fv(lightProgram, "projection", glm::value_ptr(projection));
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-1.0f, 1.1f, -5.0f));
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.0f, 1.0f, 1.0f));
+	rt3d::setUniformMatrix4fv(lightProgram, "modelview", glm::value_ptr(mvStack.top()));
+	int uID = glGetUniformLocation(lightProgram, "ambientLight");
+	glUniform4f(uID, AmbientLight.x, AmbientLight.y, AmbientLight.z, AmbientLight.w);
+	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
+	mvStack.pop();
 	/// draw cube to be Sobel filtered
 	glUseProgram(SobelShaderProgram);
 	rt3d::setUniformMatrix4fv(SobelShaderProgram, "projection", glm::value_ptr(projection));
@@ -210,14 +228,6 @@ void SobelDemo::Render()
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.0f, 1.0f, 1.0f));
 	rt3d::setUniformMatrix4fv(SobelShaderProgram, "modelview", glm::value_ptr(mvStack.top()));
 	rt3d::setMaterial(SobelShaderProgram, material0);
-
-	// calculate normal mat CPU side
-	glm::mat3 normMat = glm::transpose(glm::inverse(mvStack.top()));
-	rt3d::setUniformMatrix4fv(SobelShaderProgram, "normalMatrix", glm::value_ptr(normMat));
-
-	glm::mat4 MVP = mvStack.top() * projection; // get the MVP directly
-	rt3d::setUniformMatrix4fv(SobelShaderProgram, "modelviewproj", glm::value_ptr(MVP));
-
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
 

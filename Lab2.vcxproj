@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Demos\SobelDemo.h" />
+    <ClInclude Include="Src\Demos\TestDemo.h" />
     <ClInclude Include="Src\Profiler\InstrumentationTimer.h" />
     <ClInclude Include="Src\Profiler\Instrumentor.h" />
     <ClInclude Include="Src\Demos\ChromFresnelDemo.h" />
@@ -49,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Demos\SobelDemo.cpp" />
+    <ClCompile Include="Src\Demos\TestDemo.cpp" />
     <ClCompile Include="Src\Profiler\InstrumentationTimer.cpp" />
     <ClCompile Include="Src\Profiler\Instrumentor.cpp" />
     <ClCompile Include="Src\Demos\ChromFresnelDemo.cpp" />

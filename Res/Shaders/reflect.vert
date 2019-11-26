@@ -19,6 +19,8 @@ in  vec3 in_Normal;
 
 out vec3 ex_WorldNorm;
 out vec3 ex_WorldView;
+
+out vec3 ex_toCamera;
 																									
 void main(void) 
 {
@@ -30,7 +32,7 @@ void main(void)
 	mat3 normalworldmatrix = transpose(inverse(mat3(modelMatrix))); 
 
 	ex_WorldNorm = normalworldmatrix * in_Normal;
-	ex_WorldView = cameraPos - worldPos;
+	ex_toCamera = cameraPos - worldPos;
 
 	
 	gl_Position = projection * modelview * vec4(in_Position,1.0);
