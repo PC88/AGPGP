@@ -5,6 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <stack>
+#include "vector"
+#include "rt3dObjLoader.h"
+#include "imgui.h"
 
 #define DEG_TO_RADIAN 0.017453293
 
