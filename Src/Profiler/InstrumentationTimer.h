@@ -17,6 +17,9 @@ private:
 	bool m_Stopped;
 };
 
+//	macros for effecive usage:
+//  the ability to profile scopes, and functions of any description
+
 #define PROFILING 1
 #if PROFILING
 #define PROFILE_SCOPE(name) InstrumentationTimer timer##__LINE__(name)

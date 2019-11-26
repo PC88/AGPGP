@@ -29,6 +29,7 @@ void Instrumentor::EndSession()
 	m_ProfileCount = 0;
 }
 
+// TODO: make thread safe with mutex, and lock it at the start of function.
 void Instrumentor::WriteProfile(const ProfileResult& result)
 {
 	if (m_ProfileCount++ > 0)
@@ -46,7 +47,7 @@ void Instrumentor::WriteProfile(const ProfileResult& result)
 	m_OutputStream << "\"ph\":\"X\",";
 	m_OutputStream << "\"pid\":0,";
 	m_OutputStream << "\"tid\":" << result.ThreadID << ","; // support for multithreading: TID = thread ID
-	m_OutputStream << "\"ts\":" << result.Start;
+	m_OutputStream << "\"ts\":" << result.Start; // ts = time stamp
 	m_OutputStream << "}";
 
 	// stream peice meal for no data loss
