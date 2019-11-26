@@ -10,19 +10,17 @@
 
 using namespace std;
 
-class SobelBloomDemo :
+class SobelDemo :
 	public Demo
 {
 public:
-	SobelBloomDemo();
-	virtual ~SobelBloomDemo();
+	SobelDemo();
+	virtual ~SobelDemo();
 
 
 	virtual void Update(double interval) override;
 	virtual void ImGuiRender() override;
 	virtual void Render() override;
-
-	void setUpLights();
 
 	glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d);
 	glm::vec3 moveRight(glm::vec3 pos, GLfloat angle, GLfloat d);
@@ -40,9 +38,8 @@ private:
 	stack<glm::mat4> mvStack;
 
 	// shader handles
-	GLuint SobelBloomShaderProgram;
+	GLuint SobelShaderProgram;
 	GLuint shaderProgram;
-	GLuint blurrProgram;
 
 	GLfloat rotation = 0.0f;
 
@@ -52,18 +49,13 @@ private:
 	GLuint labels[5];
 
 	rt3d::lightStruct light0 = {
-		{1.0f, 1.0f, 1.0f, 1.0f}, // ambient
-		{10.1f, 10.0f, 10.0f, 1.0f}, // diffuse
-		{1.0f, 1.0f, 1.2f, 1.0f}, // specular
-		{0.0f, 2.0f, -40.0f, 1.0f}  // position
+		{0.4f, 0.4f, 0.4f, 1.0f}, // ambient
+		{1.0f, 1.0f, 1.0f, 1.0f}, // diffuse
+		{1.0f, 1.0f, 1.0f, 1.0f}, // specular
+		{-5.0f, 2.0f, 2.0f, 1.0f}  // position
 	};
 
-	std::vector<glm::vec3> lightPositions;
-	// colors
-	std::vector<glm::vec3> lightColors;
-
-
-	glm::vec4 lightPos = glm::vec4(0.0f, 2.0f, -20.0f, 1.0f); //light position
+	glm::vec4 lightPos = glm::vec4(-5.0f, 2.0f, 2.0f, 1.0f); //light position
 
 	rt3d::materialStruct material0 = {
 		{0.2f, 0.4f, 0.2f, 1.0f}, // ambient
@@ -87,22 +79,20 @@ private:
 
 	/// FBO details ///
 	GLuint fboID;
-	GLuint PingPongFBOs[2];
-	GLuint PingPongBuffers[2];
 	GLuint depthStencilBufID;
-	GLuint screenTextures[2]; // these are the colour Buffers for the bloom effect
+	GLuint screenTex;
 	GLuint screenWidth = 800;
 	GLuint screenHeight = 600;
-	const GLenum fboAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; // color buffer attachment
+	const GLenum fboAttachments[1] = { GL_COLOR_ATTACHMENT0 }; // color buffer attachment
 	const GLenum frameBuff[1] = { GL_BACK_LEFT }; // back buffer FBO attachment
 
 	// data for the quad which is drawn as a lens
-	GLuint screenTexturesShaderProgram;
+	GLuint screenTexShaderProgram;
 
 	// uniform interactive variables
-	float edgeColor[3] = { 1.0f, 1.0f, 1.0f };
-	float Herp1;
-	float Herp2;
+	float edgeColor[3] = { 0.0f, 0.0f, 0.0f };
+	float Herp1 = 0.0f;
+	float Herp2 = 1.0f;
 
 	unsigned int quadVAO, quadVBO;
 	float quadVertices[32] = 

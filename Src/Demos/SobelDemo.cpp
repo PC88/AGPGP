@@ -1,11 +1,11 @@
-#include "SobelBloomDemo.h"
+#include "SobelDemo.h"
 #include "vector"
 #include "rt3dObjLoader.h"
 #include "imgui.h"
 
 
 
-SobelBloomDemo::SobelBloomDemo()
+SobelDemo::SobelDemo()
 {
 	// initialize the shaders
 	shaderProgram = rt3d::initShaders("Res\\Shaders\\phong-tex.vert", "Res\\Shaders\\phong-tex.frag");
@@ -19,11 +19,13 @@ SobelBloomDemo::SobelBloomDemo()
 	uniformIndex = glGetUniformLocation(shaderProgram, "attQuadratic");
 	glUniform1f(uniformIndex, attQuadratic);
 
-	// init Sobel-Bloom shader
-	SobelBloomShaderProgram = rt3d::initShaders("Res\\Shaders\\Sobel.vert", "Res\\Shaders\\Sobel.frag");
+	// init Sobel shader
+	SobelShaderProgram = rt3d::initShaders("Res\\Shaders\\Sobel.vert", "Res\\Shaders\\Sobel.frag");
+	rt3d::setLight(SobelShaderProgram, light0);
+	rt3d::setMaterial(SobelShaderProgram, material0);
 
 	// iniit the quad shader
-	screenTexturesShaderProgram = rt3d::initShaders("Res\\Shaders\\FBOBright.vert", "Res\\Shaders\\FBOBright.frag");
+	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\FBOtest.vert", "Res\\Shaders\\FBOtest.frag");
 	// load the cube model
 	vector<GLfloat> verts;
 	vector<GLfloat> norms;
@@ -47,62 +49,35 @@ SobelBloomDemo::SobelBloomDemo()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	/////////////////////
-	// Initialize FBOS //
-	/////////////////////
+	////////////////////
+	// Initialize FBO //
+	////////////////////
 
-	// refactor to group data by buffer type:
-
-	// FBO
+	// Generate FBO, RBO & Texture handles
 	glGenFramebuffers(1, &fboID);
-	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
-
-	// RBO
 	glGenRenderbuffers(1, &depthStencilBufID);
+	glGenTextures(1, &screenTex);
+
+	// Bind FBO, RBO & Texture & init storage and params 
+	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthStencilBufID);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+	glBindTexture(GL_TEXTURE_2D, screenTex);
+	// Need to set mag and min params 
+	// otherwise mipmaps are assumed 
+	// This fixes problems with NVIDIA cards 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL); // null passes as data will be filled later
+
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	// Map COLOR_ATTACHMENT0 to texture & DEPTH_ATTACHMENT to depth buffer RBO
+	// this actually attached the values, RBO`s and textures to the FBO`s
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTex, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthStencilBufID);
 
-	// CBOs/Textures, 
-	glGenTextures(2, screenTextures);
-	for (unsigned int i = 0; i< 2; i++)
-	{
-		// Bind FBO, RBO & Texture & init storage and params 
-		glBindTexture(GL_TEXTURE_2D, screenTextures[i]);
-		// Need to set mag and min params 
-		// otherwise mipmaps are assumed 
-		// This fixes problems with NVIDIA cards 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL); // null passes as data will be filled later
-		// Map COLOR_ATTACHMENT0 to texture & DEPTH_ATTACHMENT to depth buffer RBO
-		// this actually attached the values, RBO`s and textures to the FBO`s
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, screenTextures[i], 0);
-	}
-
-	// FBOs
-	glGenFramebuffers(2, PingPongFBOs);
-	// CBOs/Textures
-	glGenTextures(2, PingPongBuffers);
-	for (unsigned int i = 0; i < 2; i++)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, PingPongFBOs[i]);
-		glBindTexture(GL_TEXTURE_2D, PingPongBuffers[i]);
-		glTexImage2D(
-			GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL
-		);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, PingPongBuffers[i], 0
-		);
-	}
 	//////// Check for errors ////////
 	GLenum valid = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (valid != GL_FRAMEBUFFER_COMPLETE)
@@ -118,18 +93,18 @@ SobelBloomDemo::SobelBloomDemo()
 		std::cout << "FBO attachments unsupported" << std::endl;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // now unbind post checking
-	/////////////////////
-	// Initialize FBOS //
-	/////////////////////
+	////////////////////
+	// Initialize FBO //
+	////////////////////
 }
 
 
-SobelBloomDemo::~SobelBloomDemo()
+SobelDemo::~SobelDemo()
 {
 	glDeleteFramebuffers(1, &fboID);
 }
 
-void SobelBloomDemo::Update(double interval)
+void SobelDemo::Update(double interval)
 {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if (keys[SDL_SCANCODE_W]) eye = moveForward(eye, rotation, 0.1f);
@@ -161,7 +136,7 @@ void SobelBloomDemo::Update(double interval)
 	}
 }
 
-void SobelBloomDemo::ImGuiRender()
+void SobelDemo::ImGuiRender()
 {
 	ImGui::Begin("Demos");
 	ImGui::SliderFloat("Hermite interpolation 1", &Herp1, 0.0f, 1.0f);
@@ -170,7 +145,7 @@ void SobelBloomDemo::ImGuiRender()
 	ImGui::End();
 }
 
-void SobelBloomDemo::Render()
+void SobelDemo::Render()
 {
 
 	// bind to framebuffer and draw scene as we normally would to color texture 
@@ -205,6 +180,7 @@ void SobelBloomDemo::Render()
 	rt3d::setLightPos(shaderProgram, glm::value_ptr(tmp));
 
 	// draw a small cube block at lightPos
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(lightPos[0], lightPos[1], lightPos[2]));
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(0.25f, 0.25f, 0.25f));
@@ -214,7 +190,7 @@ void SobelBloomDemo::Render()
 	mvStack.pop();
 
 	/// draw a cube for ground plane
-	//glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-10.0f, -0.1f, -10.0f));
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(20.0f, 0.1f, 20.0f));
@@ -224,43 +200,24 @@ void SobelBloomDemo::Render()
 	mvStack.pop();
 
 	/// draw cube to be Sobel filtered
-	glUseProgram(SobelBloomShaderProgram);
-	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "projection", glm::value_ptr(projection));
+	glUseProgram(SobelShaderProgram);
+	rt3d::setUniformMatrix4fv(SobelShaderProgram, "projection", glm::value_ptr(projection));
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-1.0f, 1.1f, -1.0f));
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.0f, 1.0f, 1.0f));
-	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setUniformMatrix4fv(SobelShaderProgram, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(SobelShaderProgram, material0);
 
 	// calculate normal mat CPU side
 	glm::mat3 normMat = glm::transpose(glm::inverse(mvStack.top()));
-	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "normalMatrix", glm::value_ptr(normMat));
+	rt3d::setUniformMatrix4fv(SobelShaderProgram, "normalMatrix", glm::value_ptr(normMat));
 
 	glm::mat4 MVP = mvStack.top() * projection; // get the MVP directly
-	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "modelviewproj", glm::value_ptr(MVP));
+	rt3d::setUniformMatrix4fv(SobelShaderProgram, "modelviewproj", glm::value_ptr(MVP));
 
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
-
-	bool horizontal = true, first_iteration = true;
-	int ammount = 10;
-	glUseProgram(blurrProgram);
-	for (unsigned int i = 0; i < ammount; i++)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, PingPongFBOs[horizontal]);
-		int uniformIndex = glGetUniformLocation(blurrProgram, "horizontal");
-		glUniform1i(uniformIndex, horizontal);
-		glBindTexture(
-			GL_TEXTURE_2D, first_iteration ? fboAttachments[1] : PingPongBuffers[!horizontal]
-		);
-		//RenderQuad();
-		glBindVertexArray(quadVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		horizontal = !horizontal;
-		if (first_iteration)
-		{
-			first_iteration = false;
-		}
-	}
 
 	// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -269,45 +226,28 @@ void SobelBloomDemo::Render()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glUseProgram(screenTexturesShaderProgram);
-	int uniformIndex = glGetUniformLocation(screenTexturesShaderProgram, "edgeColor");
+	glUseProgram(screenTexShaderProgram);
+	int uniformIndex = glGetUniformLocation(screenTexShaderProgram, "edgeColor");
 	glUniform3f(uniformIndex, edgeColor[0], edgeColor[1], edgeColor[2]);
 
-	uniformIndex = glGetUniformLocation(screenTexturesShaderProgram, "herp1");
+	uniformIndex = glGetUniformLocation(screenTexShaderProgram, "herp1");
 	glUniform1f(uniformIndex, Herp1);
 
-	uniformIndex = glGetUniformLocation(screenTexturesShaderProgram, "herp2");
+	uniformIndex = glGetUniformLocation(screenTexShaderProgram, "herp2");
 	glUniform1f(uniformIndex, Herp2);
 
-	// multi render target call
-	glDrawBuffers(2, fboAttachments);
-
 	glBindVertexArray(quadVAO);
-	glBindTexture(GL_TEXTURE_2D, screenTextures[0]);	// use the color attachment texture as the texture of the quad plane
+	glBindTexture(GL_TEXTURE_2D, screenTex);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void SobelBloomDemo::setUpLights()
-{
-	lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
-	lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
-	lightPositions.push_back(glm::vec3(3.0f, 0.5f, 1.0f));
-	lightPositions.push_back(glm::vec3(-.8f, 2.4f, -1.0f));
-
-
-	lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
-	lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
-	lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
-	lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
-}
-
-glm::vec3 SobelBloomDemo::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
+glm::vec3 SobelDemo::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
 	return glm::vec3(pos.x + d * std::sin(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z - d * std::cos(rotation * DEG_TO_RADIAN));
 }
 
-glm::vec3 SobelBloomDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
+glm::vec3 SobelDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
 	return glm::vec3(pos.x + d * std::cos(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z + d * std::sin(rotation * DEG_TO_RADIAN));
