@@ -290,7 +290,7 @@ void SobelDemo::Render()
 	// enable
 	glDrawBuffers(2, fboAttachments);
 	glBindVertexArray(quadVAO);
-	glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);	// use the color attachment texture as the texture of the quad plane
+	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

@@ -32,13 +32,13 @@ void main(void)
 	vec4 refract1 =  texture(cubeMap, refract);
 	vec4 reflectColor =  texture(cubeMap, reflectTexCoord);
 
-	//vec3 viewVector = normalize(ex_WorldView);
-	//float refractive =  dot(viewVector, normalize(ex_WorldNorm));
-	//refractive = pow(refractive, 5.0);
+	vec3 viewVector = normalize(ex_WorldView);
+	float refractive =  dot(viewVector, normalize(ex_WorldNorm));
+	refractive = pow(refractive, 5.0);
 
 	
 	//out_Color = reflectColor;
 	//out_Color = refractColor;
-		out_Color = mix(refractColor,reflectColor,refractive);
+	out_Color = mix(refractColor,reflectColor,refractive);
 
 }

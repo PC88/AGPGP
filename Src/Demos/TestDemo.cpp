@@ -183,8 +183,8 @@ void TestDemo::Render()
 	int ID = glGetUniformLocation(ReflectRefractProg, "cameraPos");
 	glUniform3f(ID, eye.x, eye.y, eye.z);
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
-	mvStack.pop();*/
-
+	mvStack.pop();
+*/
 
 	glUseProgram(ReflectRefractProg);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
