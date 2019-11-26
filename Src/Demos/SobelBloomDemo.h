@@ -22,6 +22,8 @@ public:
 	virtual void ImGuiRender() override;
 	virtual void Render() override;
 
+	void setUpLights();
+
 	glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d);
 	glm::vec3 moveRight(glm::vec3 pos, GLfloat angle, GLfloat d);
 
@@ -38,7 +40,7 @@ private:
 	stack<glm::mat4> mvStack;
 
 	// shader handles
-	GLuint SobelShaderProgram;
+	GLuint SobelBloomShaderProgram;
 	GLuint shaderProgram;
 	GLuint blurrProgram;
 
@@ -55,6 +57,11 @@ private:
 		{1.0f, 1.0f, 1.2f, 1.0f}, // specular
 		{0.0f, 2.0f, -40.0f, 1.0f}  // position
 	};
+
+	std::vector<glm::vec3> lightPositions;
+	// colors
+	std::vector<glm::vec3> lightColors;
+
 
 	glm::vec4 lightPos = glm::vec4(0.0f, 2.0f, -20.0f, 1.0f); //light position
 

@@ -19,10 +19,8 @@ SobelBloomDemo::SobelBloomDemo()
 	uniformIndex = glGetUniformLocation(shaderProgram, "attQuadratic");
 	glUniform1f(uniformIndex, attQuadratic);
 
-	// init Sobel shader
-	SobelShaderProgram = rt3d::initShaders("Res\\Shaders\\Sobel.vert", "Res\\Shaders\\Sobel.frag");
-	rt3d::setLight(SobelShaderProgram, light0);
-	rt3d::setMaterial(SobelShaderProgram, material0);
+	// init Sobel-Bloom shader
+	SobelBloomShaderProgram = rt3d::initShaders("Res\\Shaders\\Sobel.vert", "Res\\Shaders\\Sobel.frag");
 
 	// iniit the quad shader
 	screenTexturesShaderProgram = rt3d::initShaders("Res\\Shaders\\FBOBright.vert", "Res\\Shaders\\FBOBright.frag");
@@ -207,7 +205,6 @@ void SobelBloomDemo::Render()
 	rt3d::setLightPos(shaderProgram, glm::value_ptr(tmp));
 
 	// draw a small cube block at lightPos
-	//glBindTexture(GL_TEXTURE_2D, textures[0]);
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(lightPos[0], lightPos[1], lightPos[2]));
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(0.25f, 0.25f, 0.25f));
@@ -227,20 +224,19 @@ void SobelBloomDemo::Render()
 	mvStack.pop();
 
 	/// draw cube to be Sobel filtered
-	glUseProgram(SobelShaderProgram);
-	rt3d::setUniformMatrix4fv(SobelShaderProgram, "projection", glm::value_ptr(projection));
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glUseProgram(SobelBloomShaderProgram);
+	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "projection", glm::value_ptr(projection));
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-1.0f, 1.1f, -1.0f));
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.0f, 1.0f, 1.0f));
-	rt3d::setUniformMatrix4fv(SobelShaderProgram, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "modelview", glm::value_ptr(mvStack.top()));
 
 	// calculate normal mat CPU side
 	glm::mat3 normMat = glm::transpose(glm::inverse(mvStack.top()));
-	rt3d::setUniformMatrix4fv(SobelShaderProgram, "normalMatrix", glm::value_ptr(normMat));
+	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "normalMatrix", glm::value_ptr(normMat));
 
 	glm::mat4 MVP = mvStack.top() * projection; // get the MVP directly
-	rt3d::setUniformMatrix4fv(SobelShaderProgram, "modelviewproj", glm::value_ptr(MVP));
+	rt3d::setUniformMatrix4fv(SobelBloomShaderProgram, "modelviewproj", glm::value_ptr(MVP));
 
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
@@ -289,6 +285,20 @@ void SobelBloomDemo::Render()
 	glBindVertexArray(quadVAO);
 	glBindTexture(GL_TEXTURE_2D, screenTextures[0]);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void SobelBloomDemo::setUpLights()
+{
+	lightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
+	lightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
+	lightPositions.push_back(glm::vec3(3.0f, 0.5f, 1.0f));
+	lightPositions.push_back(glm::vec3(-.8f, 2.4f, -1.0f));
+
+
+	lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
+	lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
+	lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
+	lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
 }
 
 glm::vec3 SobelBloomDemo::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)

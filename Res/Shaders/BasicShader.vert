@@ -16,7 +16,7 @@ out vec2 ex_TexCoord;
 // pass out color
 out vec4 ex_Color;
 
-void main(void) 
+void main(void)
 {
 	// pass through texcoords
 	ex_TexCoord = in_TexCoord;
