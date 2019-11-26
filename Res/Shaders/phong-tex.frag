@@ -4,6 +4,10 @@
 // Some drivers require the following
 precision highp float;
 
+
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
+
 struct lightStruct
 {
 	vec4 ambient;
@@ -33,7 +37,7 @@ in vec3 ex_V;
 in vec3 ex_L;
 in vec2 ex_TexCoord;
 in float ex_D;
-layout(location = 0) out vec4 out_Color;
+
  
 void main(void) {
     
@@ -57,7 +61,12 @@ void main(void) {
 	vec4 litColour = vec4(tmp_Color.rgb *attenuation, tmp_Color.a);
 	vec4 amb=min(ambientI,vec4(1.0f));
 		
-	out_Color=min(litColour+amb*texture(textureUnit0, ex_TexCoord),vec4(1.0f));//Here attenuation does not affectambient
-	
+	FragColor=min(litColour+amb*texture(textureUnit0, ex_TexCoord),vec4(1.0f));//Here attenuation does not affectambient
+
+	float brightness = dot(FragColor.rgb, vec3(1.0, 1.0, 1.0));
+    if(brightness > 0.7)
+        BrightColor = vec4(FragColor.rgb, 1.0);
+    else
+        BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 }

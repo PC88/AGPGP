@@ -61,27 +61,60 @@ SobelDemo::SobelDemo()
 	// Generate FBO, RBO & Texture handles
 	glGenFramebuffers(1, &fboID);
 	glGenRenderbuffers(1, &depthStencilBufID);
-	glGenTextures(1, &screenTex);
+	glGenTextures(2, colorBuffers);
+	//glGenTextures(1, &screenTex);
 
 	// Bind FBO, RBO & Texture & init storage and params 
 	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthStencilBufID);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	glBindTexture(GL_TEXTURE_2D, screenTex);
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+		glTexImage2D(
+			GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL
+		);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// attach texture to framebuffer
+		glFramebufferTexture2D(
+			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0
+		);
+	}
+	//glBindTexture(GL_TEXTURE_2D, screenTex);
 	// Need to set mag and min params 
 	// otherwise mipmaps are assumed 
 	// This fixes problems with NVIDIA cards 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL); // null passes as data will be filled later
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL); // null passes as data will be filled later
 
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	// Map COLOR_ATTACHMENT0 to texture & DEPTH_ATTACHMENT to depth buffer RBO
 	// this actually attached the values, RBO`s and textures to the FBO`s
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTex, 0);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTex, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthStencilBufID);
+
+	//glGenTextures(2, colorBuffers);
+	//for (unsigned int i = 0; i < 2; i++)
+	//{
+	//	glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+	//	glTexImage2D(
+	//		GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL
+	//	);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//	// attach texture to framebuffer
+	//	glFramebufferTexture2D(
+	//		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0
+	//	);
+	//}
 
 	//////// Check for errors ////////
 	GLenum valid = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -231,6 +264,7 @@ void SobelDemo::Render()
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
 
+
 	// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
@@ -248,8 +282,15 @@ void SobelDemo::Render()
 	uniformIndex = glGetUniformLocation(screenTexShaderProgram, "herp2");
 	glUniform1f(uniformIndex, Herp2);
 
+	GLenum err;
+	while ((err = glGetError()) != GL_NO_ERROR)
+	{
+		std::cout << glGetError() << std::endl;
+	}
+	// enable
+	glDrawBuffers(2, fboAttachments);
 	glBindVertexArray(quadVAO);
-	glBindTexture(GL_TEXTURE_2D, screenTex);	// use the color attachment texture as the texture of the quad plane
+	glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

@@ -91,6 +91,8 @@ private:
 	GLuint screenHeight = 600;
 	const GLenum fboAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 }; // color buffer attachment
 	const GLenum frameBuff[1] = { GL_BACK_LEFT }; // back buffer FBO attachment
+	///  HDRFBO details ///
+	GLuint colorBuffers[2];
 
 	// data for the quad which is drawn as a lens
 	GLuint screenTexShaderProgram;
