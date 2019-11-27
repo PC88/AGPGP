@@ -24,6 +24,8 @@
 // Matt Demo
 #include "ChromFresnelDemo.h"
 
+// Combined Demo
+#include "CombinedDemo.h"
 
 // general timer
 #include "Timer.h"
@@ -68,6 +70,7 @@ int main(int argc, char *argv[])
 	demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
 	demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
 	demoManager->RegisterDemo<TestDemo>("Test Demo");
+	demoManager->RegisterDemo<CombinedDemo>("Combined Demo");
 
 
 	// Timer - PC

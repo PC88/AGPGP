@@ -27,6 +27,7 @@
     <None Include="Res\Shaders\textured.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Demos\CombinedDemo.h" />
     <ClInclude Include="Src\Demos\TestDemo.h" />
     <ClInclude Include="Src\Demos\ThreadedKernelDemo.h" />
     <ClInclude Include="Src\Profiler\InstrumentationTimer.h" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Src\Timer\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Demos\CombinedDemo.cpp" />
     <ClCompile Include="Src\Demos\TestDemo.cpp" />
     <ClCompile Include="Src\Demos\ThreadedKernelDemo.cpp" />
     <ClCompile Include="Src\Profiler\InstrumentationTimer.cpp" />
