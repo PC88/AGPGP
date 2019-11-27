@@ -25,7 +25,10 @@ public:
 	virtual void Update(double interval) override;
 	virtual void Render() override;
 
+	// TODO: rename this to move right left
 	glm::vec3 moveRight(glm::vec3 pos, GLfloat angle, GLfloat d);
+
+	// TODO: rename to move Forward Back
 	glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d);
 
 private:
@@ -41,8 +44,14 @@ private:
 
 	// shader handles
 	GLuint basicShaderProgram;
+	GLuint skyboxProgram;
+	GLuint reflectRefractProgram;
 	GLuint shaderProgram;
 	GLuint lightProgram;
+
+	GLfloat ratioR = 1.35;
+	GLfloat ratioG = 1.36;
+	GLfloat ratioB = 1.37;
 
 	GLfloat rotation = 0.0f;
 

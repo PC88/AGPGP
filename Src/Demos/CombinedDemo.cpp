@@ -20,6 +20,26 @@ CombinedDemo::CombinedDemo()
 	uniformIndex = glGetUniformLocation(shaderProgram, "attQuadratic");
 	glUniform1f(uniformIndex, attQuadratic);
 
+	const char* cubeTexFiles[6] =
+	{
+		"Res\\images\\hw_nightsky\\nightsky_bk.bmp", "Res\\images\\hw_nightsky\\nightsky_ft.bmp", "Res\\images\\hw_nightsky\\nightsky_rt.bmp",
+		"Res\\images\\hw_nightsky\\nightsky_lf.bmp", "Res\\images\\hw_nightsky\\nightsky_up.bmp", "Res\\images\\hw_nightsky\\nightsky_dn.bmp"
+	};
+	rt3d::loadCubeMap(cubeTexFiles, &skybox[0]);
+
+	// additional programs
+	skyboxProgram = rt3d::initShaders("Res\\Shaders\\cubeMap.vert", "Res\\Shaders\\cubeMap.frag");
+	reflectRefractProgram = rt3d::initShaders("Res\\Shaders\\reflect.vert", "Res\\Shaders\\reflect.frag");
+	rt3d::setLight(reflectRefractProgram, light0);
+	rt3d::setMaterial(reflectRefractProgram, material0);
+
+	uniformIndex = glGetUniformLocation(reflectRefractProgram, "cubeMap");
+	glUniform1i(uniformIndex, 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
 	// init Basic shader
 	basicShaderProgram = rt3d::initShaders("Res\\Shaders\\BasicShader.vert", "Res\\Shaders\\BasicShader.frag");
 	rt3d::setLight(basicShaderProgram, light0);
@@ -166,6 +186,23 @@ void CombinedDemo::Render()
 	at = moveForward(eye, rotation, 1.0f);
 	mvStack.top() = glm::lookAt(eye, at, up);
 
+	//skybox
+	glUseProgram(skyboxProgram);
+	rt3d::setUniformMatrix4fv(skyboxProgram, "projection", glm::value_ptr(projection));
+
+	glDepthMask(GL_FALSE); // make sure writing to update depth test is off
+	glm::mat3 mvRotOnlyMat3 = glm::mat3(mvStack.top());
+	mvStack.push(glm::mat4(mvRotOnlyMat3));
+
+	glCullFace(GL_FRONT); // drawing inside of cube!
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.5f, 1.5f, 1.5f));
+	rt3d::setUniformMatrix4fv(skyboxProgram, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
+	mvStack.pop();
+	glCullFace(GL_BACK); // drawing inside of cube!
+
+
 	// draw 
 	glUseProgram(shaderProgram);
 	rt3d::setUniformMatrix4fv(shaderProgram, "projection", glm::value_ptr(projection));
@@ -223,6 +260,31 @@ void CombinedDemo::Render()
 	mvStack.pop();
 
 
+	glUseProgram(reflectRefractProgram);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(10.0f, 10.0f, 10.0f));
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-2.0f, 1.0f, -3.0f));
+
+	int uniformIndex = glGetUniformLocation(reflectRefractProgram, "modelMatrix");
+	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+	glUniform3fv(uniformIndex, 1, glm::value_ptr(mvStack.top()));
+	rt3d::setUniformMatrix4fv(reflectRefractProgram, "projection", glm::value_ptr(projection));
+
+	uniformIndex = glGetUniformLocation(reflectRefractProgram, "cameraPos");
+	glUniform3fv(uniformIndex, 1, glm::value_ptr(eye));
+
+	uniformIndex = glGetUniformLocation(reflectRefractProgram, "ratioR");
+	glUniform1f(uniformIndex, ratioR);
+	uniformIndex = glGetUniformLocation(reflectRefractProgram, "ratioG");
+	glUniform1f(uniformIndex, ratioG);
+	uniformIndex = glGetUniformLocation(reflectRefractProgram, "ratioB");
+	glUniform1f(uniformIndex, ratioB);
+	rt3d::setUniformMatrix4fv(reflectRefractProgram, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(reflectRefractProgram, material1);
+	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
+	mvStack.pop();
+
 	// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
@@ -231,7 +293,7 @@ void CombinedDemo::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(screenTexShaderProgram);
-	int uniformIndex = glGetUniformLocation(screenTexShaderProgram, "edgeColor");
+	uniformIndex = glGetUniformLocation(screenTexShaderProgram, "edgeColor");
 	glUniform3f(uniformIndex, edgeColor[0], edgeColor[1], edgeColor[2]);
 
 	uniformIndex = glGetUniformLocation(screenTexShaderProgram, "herp1");

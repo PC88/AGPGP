@@ -12,7 +12,6 @@ layout(location = 0) out vec4 out_Color;
 
 in vec3 ex_WorldNorm;
 in vec3 ex_WorldView;
-in vec3 ex_toCamera;
 
 uniform samplerCube cubeMap;
 
@@ -26,7 +25,7 @@ void main(void)
    refractColor.a = 1.0;
 
 
-	vec3 reflectTexCoord = reflect(ex_WorldView, normalize(ex_WorldNorm));
+	vec3 reflectTexCoord = reflect(-ex_WorldView, normalize(ex_WorldNorm));
 	float ratio = 1.00 / 1.52;
 	vec3 refract =  refract(ex_WorldView, normalize(ex_WorldNorm),ratio);
 	vec4 refract1 =  texture(cubeMap, refract);
@@ -34,11 +33,11 @@ void main(void)
 
 	vec3 viewVector = normalize(ex_WorldView);
 	float refractive =  dot(viewVector, normalize(ex_WorldNorm));
-	refractive = pow(refractive, 5.0);
+	//refractive = pow(refractive, 10.0);
 
 	
 	//out_Color = reflectColor;
 	//out_Color = refractColor;
-	out_Color = mix(refractColor,reflectColor,refractive);
+		out_Color = mix(refractColor,reflectColor,refractive);
 
 }
