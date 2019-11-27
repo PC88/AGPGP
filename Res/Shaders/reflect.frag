@@ -1,4 +1,4 @@
-// Phong fragment shader phong-tex.frag matched with phong-tex.vert
+
 #version 330
 
 // Some drivers require the following
@@ -19,10 +19,10 @@ void main(void)
 {
 
 	vec4 refractColor;  
-   refractColor.r = texture(cubeMap, refract(ex_WorldView, normalize(ex_WorldNorm),ratioR)).r;  
-   refractColor.g = texture(cubeMap, refract(ex_WorldView, normalize(ex_WorldNorm),ratioG)).g; 
-   refractColor.b = texture(cubeMap, refract(ex_WorldView, normalize(ex_WorldNorm),ratioB)).b; 
-   refractColor.a = 1.0;
+    refractColor.r = texture(cubeMap, refract(ex_WorldView, normalize(ex_WorldNorm),ratioR)).r;  
+    refractColor.g = texture(cubeMap, refract(ex_WorldView, normalize(ex_WorldNorm),ratioG)).g; 
+    refractColor.b = texture(cubeMap, refract(ex_WorldView, normalize(ex_WorldNorm),ratioB)).b; 
+    refractColor.a = 1.0;
 
 
 	vec3 reflectTexCoord = reflect(-ex_WorldView, normalize(ex_WorldNorm));
@@ -38,6 +38,6 @@ void main(void)
 	
 	//out_Color = reflectColor;
 	//out_Color = refractColor;
-		out_Color = mix(refractColor,reflectColor,refractive);
+	out_Color = mix(refractColor,reflectColor,refractive);
 
 }
