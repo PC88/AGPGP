@@ -25,11 +25,9 @@ public:
 	virtual void Update(double interval) override;
 	virtual void Render() override;
 
-	// TODO: rename this to move right left
-	glm::vec3 moveRight(glm::vec3 pos, GLfloat angle, GLfloat d);
+	glm::vec3 moveRightLeft(glm::vec3 pos, GLfloat angle, GLfloat d);
 
-	// TODO: rename to move Forward Back
-	glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d);
+	glm::vec3 moveForwardBack(glm::vec3 pos, GLfloat angle, GLfloat d);
 
 private:
 	GLuint meshIndexCount = 0;

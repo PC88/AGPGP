@@ -135,10 +135,10 @@ void CombinedDemo::ImGuiRender()
 void CombinedDemo::Update(double interval)
 {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
-	if (keys[SDL_SCANCODE_W]) eye = moveForward(eye, rotation, 0.1f);
-	if (keys[SDL_SCANCODE_S]) eye = moveForward(eye, rotation, -0.1f);
-	if (keys[SDL_SCANCODE_A]) eye = moveRight(eye, rotation, -0.1f);
-	if (keys[SDL_SCANCODE_D]) eye = moveRight(eye, rotation, 0.1f);
+	if (keys[SDL_SCANCODE_W]) eye = moveForwardBack(eye, rotation, 0.1f);
+	if (keys[SDL_SCANCODE_S]) eye = moveForwardBack(eye, rotation, -0.1f);
+	if (keys[SDL_SCANCODE_A]) eye = moveRightLeft(eye, rotation, -0.1f);
+	if (keys[SDL_SCANCODE_D]) eye = moveRightLeft(eye, rotation, 0.1f);
 	if (keys[SDL_SCANCODE_R]) eye.y += 0.1f;
 	if (keys[SDL_SCANCODE_F]) eye.y -= 0.1f;
 
@@ -151,6 +151,15 @@ void CombinedDemo::Update(double interval)
 
 	if (keys[SDL_SCANCODE_COMMA]) rotation -= 1.0f;
 	if (keys[SDL_SCANCODE_PERIOD]) rotation += 1.0f;
+
+	if (keys[SDL_SCANCODE_2]) ratioR += 0.01f;
+	if (keys[SDL_SCANCODE_3]) ratioR -= 0.01f;
+
+	if (keys[SDL_SCANCODE_4]) ratioG += 0.01f;
+	if (keys[SDL_SCANCODE_5]) ratioG -= 0.01f;
+
+	if (keys[SDL_SCANCODE_6]) ratioB += 0.01f;
+	if (keys[SDL_SCANCODE_7]) ratioB -= 0.01f;
 
 	if (keys[SDL_SCANCODE_1])
 	{
@@ -183,7 +192,7 @@ void CombinedDemo::Render()
 	glm::mat4 modelview(1.0); // set base position for scene
 	mvStack.push(modelview);
 
-	at = moveForward(eye, rotation, 1.0f);
+	at = moveForwardBack(eye, rotation, 1.0f);
 	mvStack.top() = glm::lookAt(eye, at, up);
 
 	//skybox
@@ -307,13 +316,13 @@ void CombinedDemo::Render()
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-glm::vec3 CombinedDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
+glm::vec3 CombinedDemo::moveRightLeft(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
 	return glm::vec3(pos.x + d * std::cos(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z + d * std::sin(rotation * DEG_TO_RADIAN));
 }
 
-glm::vec3 CombinedDemo::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
+glm::vec3 CombinedDemo::moveForwardBack(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
 	return glm::vec3(pos.x + d * std::sin(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z - d * std::cos(rotation * DEG_TO_RADIAN));
