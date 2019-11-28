@@ -115,7 +115,9 @@ int main(int argc, char *argv[])
 			}
 
 			// Game Loop, Pattern used for decoupling -PC, -Robert Nystrom GPP
+			PROFILE_BEGIN_SESSION("Renderloop", "GPProfile-renderloop.json");
 			currentDemo->Render();
+			PROFILE_END_SESSION();
 			ImGui::Begin("Test Demos");
 			if (currentDemo != demoManager && ImGui::Button("<-"))
 			{

@@ -17,11 +17,13 @@ private:
 	bool m_Stopped;
 };
 
-//	macros for effecive usage:
+//	macros for effective usage:
 //  the ability to profile scopes, and functions of any description
 
 #define PROFILING 1
 #if PROFILING
+#define PROFILE_BEGIN_SESSION(name, filepath) Instrumentor::Get().BeginSession(name, filepath)
+#define PROFILE_END_SESSION() Instrumentor::Get().EndSession()
 #define PROFILE_SCOPE(name) InstrumentationTimer timer##__LINE__(name)
 #define PROFILE_FUNCTION() PROFILE_SCOPE(__FUNCSIG__)
 #else

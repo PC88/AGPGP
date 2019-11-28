@@ -65,7 +65,7 @@ private:
 	{0.3f, 0.3f, 0.3f, 0.0f}, // ambient
 	{1.0f, 1.0f, 1.0f, 0.0f}, // diffuse
 	{1.0f, 1.0f, 1.0f, 0.0f}, // specular
-	{-10.0f, 100.0f, 10.0f, 1.0f},  // position
+	{-10.0f, 10.0f, 10.0f, 1.0f},  // position
 	{0.8f} //Cutoff Angle
 	};
 	float cutoffAngle = 0.8f;

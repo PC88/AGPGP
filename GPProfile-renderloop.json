@@ -1,0 +1,1 @@
+{"otherData": {},"traceEvents":[,{"cat":"function","dur":1,"name":"struct glm::vec<3,float,0> __thiscall ThreadedKernelDemo::moveForward(struct glm::vec<3,float,0>,float,float)","ph":"X","pid":0,"tid":0,"ts":622884508446},{"cat":"function","dur":394,"name":"void __thiscall ThreadedKernelDemo::Render(void)","ph":"X","pid":0,"tid":0,"ts":622884508436}]}
