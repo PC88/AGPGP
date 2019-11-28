@@ -21,6 +21,7 @@ namespace rt3d {
 		GLfloat diffuse[4];
 		GLfloat specular[4];
 		GLfloat position[4];
+		float cutOff;
 	};
 
 	struct lightStructCutOff {
@@ -28,7 +29,7 @@ namespace rt3d {
 		GLfloat diffuse[4];
 		GLfloat specular[4];
 		GLfloat position[4];
-		GLfloat cutOff;
+		float cutOff;
 	};
 
 	struct materialStruct {

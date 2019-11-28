@@ -235,6 +235,7 @@ void setProjection(const GLuint program, const GLfloat *data) {
 	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, data); 
 }
 
+
 void setLight(const GLuint program, const lightStruct light) {
 	// pass in light data to shader
 	int uniformIndex = glGetUniformLocation(program, "light.ambient");
@@ -245,6 +246,8 @@ void setLight(const GLuint program, const lightStruct light) {
 	glUniform4fv(uniformIndex, 1, light.specular);
 	uniformIndex = glGetUniformLocation(program, "lightPosition");
 	glUniform4fv(uniformIndex, 1, light.position);
+	uniformIndex = glGetUniformLocation(program, "light.cutOff");
+	glUniform1f(uniformIndex, light.cutOff);
 }
 
 void setCutOffLight(const GLuint program, const lightStructCutOff light) {
@@ -272,8 +275,8 @@ void setMaterial(const GLuint program, const materialStruct material) {
 	glUniform1f(uniformIndex, material.shininess);
 }
 
-void setSpotLightPos(const GLuint program, const GLfloat* lightPos)
-{
+
+void setSpotLightPos(const GLuint program, const GLfloat* lightPos) {
 	int uniformIndex = glGetUniformLocation(program, "spotDir");
 	glUniform4fv(uniformIndex, 1, lightPos);
 }
