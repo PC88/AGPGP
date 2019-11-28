@@ -5,6 +5,7 @@
 
 CombinedDemo::CombinedDemo()
 {
+	InstrumentationTimer timer("constructor");
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
 
@@ -88,6 +89,7 @@ void CombinedDemo::ImGuiRender()
 
 void CombinedDemo::Update(double interval)
 {
+	InstrumentationTimer timer("Update");
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if (keys[SDL_SCANCODE_W]) eye = moveForwardBack(eye, rotation, 0.1f);
 	if (keys[SDL_SCANCODE_S]) eye = moveForwardBack(eye, rotation, -0.1f);
@@ -184,6 +186,7 @@ void CombinedDemo::Update(double interval)
 
 void CombinedDemo::Render()
 {
+	InstrumentationTimer timer("Render");
 	// bind to framebuffer and draw scene as we normally would to color texture 
 	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
 	glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)

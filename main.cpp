@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
 	ImGui_ImplSDL2_InitForOpenGL(hWindow, glContext);
 	ImGui::StyleColorsDark();
 
+	Instrumentor::Get().BeginSession("Profile");
+
 	Demo* currentDemo = nullptr;
 	DemoManager* demoManager = new DemoManager(currentDemo);
 	currentDemo = demoManager;
@@ -106,7 +108,6 @@ int main(int argc, char *argv[])
 		ImGui::NewFrame();
 		if (currentDemo)
 		{
-
 			while (lag >= MS_PER_UPDATE)
 			{
 				currentDemo->Update(MS_PER_UPDATE);
@@ -133,6 +134,8 @@ int main(int argc, char *argv[])
 
 		SDL_GL_SwapWindow(hWindow); // swap buffers, really should not have been in draw in the first place.
 	}
+
+	Instrumentor::Get().EndSession();
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
 
