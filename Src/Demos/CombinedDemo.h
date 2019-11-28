@@ -29,12 +29,16 @@ public:
 
 	glm::vec3 moveForwardBack(glm::vec3 pos, GLfloat angle, GLfloat d);
 
+	void LoadFBO();
+
+	void SetUpQuad();
+
 private:
 	GLuint meshIndexCount = 0;
 	GLuint toonIndexCount = 0;
 	GLuint meshObjects[2];
 
-	glm::vec3 eye = glm::vec3(-2.0f, 1.0f, 8.0f);
+	glm::vec3 eye = glm::vec3(-2.0f, 10.0f, 8.0f);
 	glm::vec3 at = glm::vec3(0.0f, 1.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 

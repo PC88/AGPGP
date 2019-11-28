@@ -8,12 +8,22 @@ CombinedDemo::CombinedDemo()
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
 
+	// init Basic shader
+	basicShaderProgram = rt3d::initShaders("Res\\Shaders\\BasicShader.vert", "Res\\Shaders\\BasicShader.frag");
+	rt3d::setLight(basicShaderProgram, light0);
+	rt3d::setMaterial(basicShaderProgram, material0);
+
+	// init the quad shader
+	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\KernelSharpen.vert", "Res\\Shaders\\KernelSharpen.frag");
+	lightProgram = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
+
 	//initialize shader
 	shaderProgram_phong_monochrome = rt3d::initShaders("Res\\Shaders\\phong-tex-mono.vert", "Res\\Shaders\\phong-tex-mono.frag");
 	rt3d::setLight(shaderProgram_phong_monochrome, light1);
 	rt3d::setMaterial(shaderProgram_phong_monochrome, material0);
 	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
 
+	// additional programs
 	const char* cubeTexFiles[6] =
 	{
 		"Res\\images\\hw_nightsky\\nightsky_bk.bmp", "Res\\images\\hw_nightsky\\nightsky_ft.bmp", "Res\\images\\hw_nightsky\\nightsky_rt.bmp",
@@ -21,7 +31,6 @@ CombinedDemo::CombinedDemo()
 	};
 	rt3d::loadCubeMap(cubeTexFiles, &skybox[0]);
 
-	// additional programs
 	skyboxProgram = rt3d::initShaders("Res\\Shaders\\cubeMap.vert", "Res\\Shaders\\cubeMap.frag");
 	reflectRefractProgram = rt3d::initShaders("Res\\Shaders\\reflect.vert", "Res\\Shaders\\reflect.frag");
 	rt3d::setLight(reflectRefractProgram, light0);
@@ -33,17 +42,6 @@ CombinedDemo::CombinedDemo()
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
-
-	// init Basic shader
-	basicShaderProgram = rt3d::initShaders("Res\\Shaders\\BasicShader.vert", "Res\\Shaders\\BasicShader.frag");
-	rt3d::setLight(basicShaderProgram, light0);
-	rt3d::setMaterial(basicShaderProgram, material0);
-
-	// init the quad shader
-	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\KernelSharpen.vert", "Res\\Shaders\\KernelSharpen.frag");
-
-	lightProgram = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
-
 
 	/// LOAD MODELS ///
 	// load the cube model
@@ -69,66 +67,13 @@ CombinedDemo::CombinedDemo()
 	norms.clear();
 	tex_coords.clear();
 	indices.clear();
+
 	// load another texture
 	textures[2] = rt3d::loadBitmap("Res\\images\\studdedmetal.bmp");
 
-	glGenVertexArrays(1, &quadVAO);
-	glGenBuffers(1, &quadVBO);
-	glBindVertexArray(quadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	SetUpQuad();
 
-	////////////////////
-	// Initialize FBO //
-	////////////////////
-
-	// Generate FBO, RBO & Texture handles
-	glGenFramebuffers(1, &fboID);
-	glGenRenderbuffers(1, &depthStencilBufID);
-	glGenTextures(1, &screenTex);
-
-	// Bind FBO, RBO & Texture & init storage and params 
-	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthStencilBufID);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	glBindTexture(GL_TEXTURE_2D, screenTex);
-	// Need to set mag and min params 
-	// otherwise mipmaps are assumed 
-	// This fixes problems with NVIDIA cards 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL); // null passes as data will be filled later
-
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	// Map COLOR_ATTACHMENT0 to texture & DEPTH_ATTACHMENT to depth buffer RBO
-	// this actually attached the values, RBO`s and textures to the FBO`s
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTex, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthStencilBufID);
-
-	//////// Check for errors ////////
-	GLenum valid = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (valid != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Frame buffer Object not complete" << std::endl;
-	}
-	if (valid == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-	{
-		std::cout << "Frame buffer incomplete attachment" << std::endl;
-	}
-	if (valid == GL_FRAMEBUFFER_UNSUPPORTED)
-	{
-		std::cout << "FBO attachments unsupported" << std::endl;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); // now unbind post checking
-	////////////////////
-	// Initialize FBO //
-	////////////////////
+	LoadFBO();
 }
 
 CombinedDemo::~CombinedDemo()
@@ -248,7 +193,7 @@ void CombinedDemo::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 projection(1.0);
-	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 150.0f);
+	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 300.0f);
 
 
 	GLfloat scale(1.0f); // just to allow easy scaling of complete scene
@@ -281,7 +226,7 @@ void CombinedDemo::Render()
 	glUseProgram(lightProgram);
 	rt3d::setUniformMatrix4fv(lightProgram, "projection", glm::value_ptr(projection));
 	mvStack.push(mvStack.top());
-	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-1.0f, 1.1f, -5.0f));
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-1.0f, 10.1f, -5.0f));
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.0f, 1.0f, 1.0f));
 	rt3d::setUniformMatrix4fv(lightProgram, "modelview", glm::value_ptr(mvStack.top()));
 	int uID = glGetUniformLocation(lightProgram, "ambientLight");
@@ -436,4 +381,62 @@ glm::vec3 CombinedDemo::moveForwardBack(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
 	return glm::vec3(pos.x + d * std::sin(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z - d * std::cos(rotation * DEG_TO_RADIAN));
+}
+
+void CombinedDemo::LoadFBO()
+{
+
+	// Generate FBO, RBO & Texture handles
+	glGenFramebuffers(1, &fboID);
+	glGenRenderbuffers(1, &depthStencilBufID);
+	glGenTextures(1, &screenTex);
+
+	// Bind FBO, RBO & Texture & init storage and params 
+	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthStencilBufID);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+	glBindTexture(GL_TEXTURE_2D, screenTex);
+	// Need to set mag and min params 
+	// otherwise mipmaps are assumed 
+	// This fixes problems with NVIDIA cards 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL); // null passes as data will be filled later
+
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	// Map COLOR_ATTACHMENT0 to texture & DEPTH_ATTACHMENT to depth buffer RBO
+	// this actually attached the values, RBO`s and textures to the FBO`s
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTex, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthStencilBufID);
+
+	//////// Check for errors ////////
+	GLenum valid = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (valid != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "Frame buffer Object not complete" << std::endl;
+	}
+	if (valid == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+	{
+		std::cout << "Frame buffer incomplete attachment" << std::endl;
+	}
+	if (valid == GL_FRAMEBUFFER_UNSUPPORTED)
+	{
+		std::cout << "FBO attachments unsupported" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // now unbind post checking
+}
+
+void CombinedDemo::SetUpQuad()
+{
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
