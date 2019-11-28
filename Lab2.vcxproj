@@ -30,8 +30,6 @@
     <ClInclude Include="Src\Demos\CombinedDemo.h" />
     <ClInclude Include="Src\Demos\TestDemo.h" />
     <ClInclude Include="Src\Demos\ThreadedKernelDemo.h" />
-    <ClInclude Include="Src\Profiler\InstrumentationTimer.h" />
-    <ClInclude Include="Src\Profiler\Instrumentor.h" />
     <ClInclude Include="Src\Demos\ChromFresnelDemo.h" />
     <ClInclude Include="Dependencies\imgui\imgui.h" />
     <ClInclude Include="Dependencies\imgui\imgui_impl_opengl3.h" />
@@ -43,6 +41,7 @@
     <ClInclude Include="Src\Demos\MonoChromDemo.h" />
     <ClInclude Include="Src\Demos\Demo.h" />
     <ClInclude Include="Src\Demos\DemoManager.h" />
+    <ClInclude Include="Src\Profiler\Instrumentor.h" />
     <ClInclude Include="Src\RT3D\anorms.h" />
     <ClInclude Include="Src\RT3D\md2model.h" />
     <ClInclude Include="Src\RT3D\rt3d.h" />
@@ -55,8 +54,6 @@
     <ClCompile Include="Src\Demos\CombinedDemo.cpp" />
     <ClCompile Include="Src\Demos\TestDemo.cpp" />
     <ClCompile Include="Src\Demos\ThreadedKernelDemo.cpp" />
-    <ClCompile Include="Src\Profiler\InstrumentationTimer.cpp" />
-    <ClCompile Include="Src\Profiler\Instrumentor.cpp" />
     <ClCompile Include="Src\Demos\ChromFresnelDemo.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui_demo.cpp" />

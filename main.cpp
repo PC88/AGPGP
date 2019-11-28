@@ -34,7 +34,6 @@
 
 //instrumentor and its timer
 #include "Instrumentor.h"
-#include "InstrumentationTimer.h"
 
 // Program entry point - SDL manages the actual WinMain entry point for us
 int main(int argc, char *argv[]) 
@@ -90,7 +89,6 @@ int main(int argc, char *argv[])
 		double elapsedTime = currentTime - previousTime;
 		previousTime = currentTime;
 		lag += elapsedTime;
-
 		
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -108,23 +106,25 @@ int main(int argc, char *argv[])
 		ImGui::NewFrame();
 		if (currentDemo)
 		{
+
 			while (lag >= MS_PER_UPDATE)
 			{
 				currentDemo->Update(MS_PER_UPDATE);
 				lag -= MS_PER_UPDATE;
 			}
-
 			// Game Loop, Pattern used for decoupling -PC, -Robert Nystrom GPP
-			PROFILE_BEGIN_SESSION("Renderloop", "GPProfile-renderloop.json");
-			currentDemo->Render();
-			PROFILE_END_SESSION();
+			{
+				currentDemo->Render();
+			}
 			ImGui::Begin("Test Demos");
 			if (currentDemo != demoManager && ImGui::Button("<-"))
 			{
 				delete currentDemo;
 				currentDemo = demoManager;
 			}
-			currentDemo->ImGuiRender();
+			{
+				currentDemo->ImGuiRender();
+			}
 			ImGui::End();
 		}
 
@@ -133,7 +133,6 @@ int main(int argc, char *argv[])
 
 		SDL_GL_SwapWindow(hWindow); // swap buffers, really should not have been in draw in the first place.
 	}
-
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
 

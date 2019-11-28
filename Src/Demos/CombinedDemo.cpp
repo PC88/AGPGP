@@ -1,7 +1,7 @@
 #include "CombinedDemo.h"
 #include "vector"
 #include "rt3dObjLoader.h"
-
+#include "Instrumentor.h"
 
 CombinedDemo::CombinedDemo()
 {

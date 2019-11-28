@@ -7,7 +7,6 @@
 
 ThreadedKernelDemo::ThreadedKernelDemo()
 {
-	PROFILE_FUNCTION();
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
 	// initialize the shaders
@@ -145,7 +144,6 @@ ThreadedKernelDemo::~ThreadedKernelDemo()
 
 void ThreadedKernelDemo::Update(double interval)
 {
-	PROFILE_FUNCTION();
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if (keys[SDL_SCANCODE_W]) eye = moveForward(eye, rotation, 0.1f);
 	if (keys[SDL_SCANCODE_S]) eye = moveForward(eye, rotation, -0.1f);
@@ -178,7 +176,6 @@ void ThreadedKernelDemo::Update(double interval)
 
 void ThreadedKernelDemo::ImGuiRender()
 {
-	PROFILE_FUNCTION();
 	ImGui::Begin("Demos");
 	ImGui::SliderFloat("Hermite interpolation 1", &Herp1, 0.0f, 1.0f);
 	ImGui::SliderFloat("Hermite interpolation 2", &Herp2, 0.0f, 1.0f);
@@ -192,7 +189,6 @@ void ThreadedKernelDemo::ImGuiRender()
 
 void ThreadedKernelDemo::Render()
 {
-	PROFILE_FUNCTION();
 	// bind to framebuffer and draw scene as we normally would to color texture 
 	glBindFramebuffer(GL_FRAMEBUFFER, fboID);
 	glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
@@ -293,14 +289,12 @@ void ThreadedKernelDemo::Render()
 
 glm::vec3 ThreadedKernelDemo::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
-	PROFILE_FUNCTION();
 	return glm::vec3(pos.x + d * std::sin(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z - d * std::cos(rotation * DEG_TO_RADIAN));
 }
 
 glm::vec3 ThreadedKernelDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
 {
-	PROFILE_FUNCTION();
 	return glm::vec3(pos.x + d * std::cos(rotation * DEG_TO_RADIAN), pos.y,
 		pos.z + d * std::sin(rotation * DEG_TO_RADIAN));
 

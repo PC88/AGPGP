@@ -8,7 +8,6 @@
 #include "vector"
 #include "rt3dObjLoader.h"
 #include "imgui.h"
-#include "InstrumentationTimer.h"
 #include "Instrumentor.h"
 
 #define DEG_TO_RADIAN 0.017453293
