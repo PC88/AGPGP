@@ -8,17 +8,11 @@ CombinedDemo::CombinedDemo()
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
 
-	// initialize the shaders
-	shaderProgram = rt3d::initShaders("Res\\Shaders\\phong-tex-monochrome.vert", "Res\\Shaders\\phong-tex-monochrome.frag");
-	rt3d::setLight(shaderProgram, light0);
-	rt3d::setMaterial(shaderProgram, material0);
-	// set light attenuation shader uniforms
-	GLuint uniformIndex = glGetUniformLocation(shaderProgram, "attConst");
-	glUniform1f(uniformIndex, attConstant);
-	uniformIndex = glGetUniformLocation(shaderProgram, "attLinear");
-	glUniform1f(uniformIndex, attLinear);
-	uniformIndex = glGetUniformLocation(shaderProgram, "attQuadratic");
-	glUniform1f(uniformIndex, attQuadratic);
+	//initialize shader
+	shaderProgram_phong_monochrome = rt3d::initShaders("Res\\Shaders\\phong-tex-mono.vert", "Res\\Shaders\\phong-tex-mono.frag");
+	rt3d::setLight(shaderProgram_phong_monochrome, light1);
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material0);
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
 
 	const char* cubeTexFiles[6] =
 	{
@@ -33,7 +27,7 @@ CombinedDemo::CombinedDemo()
 	rt3d::setLight(reflectRefractProgram, light0);
 	rt3d::setMaterial(reflectRefractProgram, material0);
 
-	uniformIndex = glGetUniformLocation(reflectRefractProgram, "cubeMap");
+	GLuint uniformIndex = glGetUniformLocation(reflectRefractProgram, "cubeMap");
 	glUniform1i(uniformIndex, 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
@@ -50,6 +44,8 @@ CombinedDemo::CombinedDemo()
 
 	lightProgram = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
 
+
+	/// LOAD MODELS ///
 	// load the cube model
 	vector<GLfloat> verts;
 	vector<GLfloat> norms;
@@ -59,7 +55,20 @@ CombinedDemo::CombinedDemo()
 	meshIndexCount = indices.size();
 	textures[0] = rt3d::loadBitmap("Res\\images\\fabric.bmp");
 	meshObjects[0] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), tex_coords.data(), meshIndexCount, indices.data());
+	
+	verts.clear();
+	norms.clear();
+	tex_coords.clear();
+	indices.clear();
 
+	rt3d::loadObj("Res\\Models\\bunny-5000.obj", verts, norms, tex_coords, indices);
+	toonIndexCount = indices.size();
+	meshObjects[1] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), nullptr, toonIndexCount, indices.data());
+
+	verts.clear();
+	norms.clear();
+	tex_coords.clear();
+	indices.clear();
 	// load another texture
 	textures[2] = rt3d::loadBitmap("Res\\images\\studdedmetal.bmp");
 
@@ -142,13 +151,6 @@ void CombinedDemo::Update(double interval)
 	if (keys[SDL_SCANCODE_R]) eye.y += 0.1f;
 	if (keys[SDL_SCANCODE_F]) eye.y -= 0.1f;
 
-	if (keys[SDL_SCANCODE_I]) lightPos[2] -= 0.1f;
-	if (keys[SDL_SCANCODE_J]) lightPos[0] -= 0.1f;
-	if (keys[SDL_SCANCODE_K]) lightPos[2] += 0.1f;
-	if (keys[SDL_SCANCODE_L]) lightPos[0] += 0.1f;
-	if (keys[SDL_SCANCODE_U]) lightPos[1] += 0.1f;
-	if (keys[SDL_SCANCODE_H]) lightPos[1] -= 0.1f;
-
 	if (keys[SDL_SCANCODE_COMMA]) rotation -= 1.0f;
 	if (keys[SDL_SCANCODE_PERIOD]) rotation += 1.0f;
 
@@ -160,6 +162,68 @@ void CombinedDemo::Update(double interval)
 
 	if (keys[SDL_SCANCODE_6]) ratioB += 0.01f;
 	if (keys[SDL_SCANCODE_7]) ratioB -= 0.01f;
+
+	//Control the spotlight's movement
+	if (keys[SDL_SCANCODE_L]) {
+		if (keys[SDL_SCANCODE_LCTRL])
+		{
+			movingLightPos += glm::vec4(-1, 0, 0, 0);
+		}
+		else
+		{
+			movingLightPos += glm::vec4(1, 0, 0, 0);
+		}
+	}
+	if (keys[SDL_SCANCODE_U]) {
+		if (keys[SDL_SCANCODE_LCTRL])
+		{
+			movingLightPos += glm::vec4(0, -1, 0, 0);
+		}
+		else
+		{
+			movingLightPos += glm::vec4(0, 1, 0, 0);
+		}
+	}
+	if (keys[SDL_SCANCODE_K]) {
+		if (keys[SDL_SCANCODE_LCTRL])
+		{
+			movingLightPos += glm::vec4(0, 0, -1, 0);
+		}
+		else
+		{
+			movingLightPos += glm::vec4(0, 0, 1, 0);
+		}
+	}
+	if (keys[SDL_SCANCODE_J]) {
+		if (keys[SDL_SCANCODE_LCTRL])
+		{
+			movingLightPos -= glm::vec4(-1, 0, 0, 0);
+		}
+		else
+		{
+			movingLightPos -= glm::vec4(1, 0, 0, 0);
+		}
+	}
+	if (keys[SDL_SCANCODE_O]) {
+		if (keys[SDL_SCANCODE_LCTRL])
+		{
+			movingLightPos -= glm::vec4(0, -1, 0, 0);
+		}
+		else
+		{
+			movingLightPos -= glm::vec4(0, 1, 0, 0);
+		}
+	}
+	if (keys[SDL_SCANCODE_I]) {
+		if (keys[SDL_SCANCODE_LCTRL])
+		{
+			movingLightPos -= glm::vec4(0, 0, -1, 0);
+		}
+		else
+		{
+			movingLightPos -= glm::vec4(0, 0, 1, 0);
+		}
+	}
 
 	if (keys[SDL_SCANCODE_1])
 	{
@@ -211,38 +275,7 @@ void CombinedDemo::Render()
 	mvStack.pop();
 	glCullFace(GL_BACK); // drawing inside of cube!
 
-
-	// draw 
-	glUseProgram(shaderProgram);
-	rt3d::setUniformMatrix4fv(shaderProgram, "projection", glm::value_ptr(projection));
-
-	/// draw light
-	glm::vec4 tmp = mvStack.top() * lightPos;
-	light0.position[0] = tmp.x;
-	light0.position[1] = tmp.y;
-	light0.position[2] = tmp.z;
-	rt3d::setLightPos(shaderProgram, glm::value_ptr(tmp));
-
-	// draw a small cube block at lightPos
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	mvStack.push(mvStack.top());
-	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(lightPos[0], lightPos[1], lightPos[2]));
-	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(0.25f, 0.25f, 0.25f));
-	rt3d::setUniformMatrix4fv(shaderProgram, "modelview", glm::value_ptr(mvStack.top()));
-	rt3d::setMaterial(shaderProgram, material0);
-	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
-	mvStack.pop();
-
-	/// draw a cube for ground plane
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	mvStack.push(mvStack.top());
-	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(-10.0f, -0.1f, -10.0f));
-	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(20.0f, 0.1f, 20.0f));
-	rt3d::setUniformMatrix4fv(shaderProgram, "modelview", glm::value_ptr(mvStack.top()));
-	rt3d::setMaterial(shaderProgram, material0);
-	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
-	mvStack.pop();
-
+	glDepthMask(GL_TRUE);
 
 	/// draw ambient light
 	glUseProgram(lightProgram);
@@ -268,7 +301,7 @@ void CombinedDemo::Render()
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
 
-
+	/// draw chromatic dispersed cube with Fresnel
 	glUseProgram(reflectRefractProgram);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
 	mvStack.push(mvStack.top());
@@ -293,6 +326,83 @@ void CombinedDemo::Render()
 	rt3d::setMaterial(reflectRefractProgram, material1);
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
+
+	/// draw Matthew demo
+	glUseProgram(shaderProgram_phong_monochrome);
+	//handle moving light
+	glm::vec4 tmp = mvStack.top() * movingLightPos;
+	light1.position[0] = tmp.x;
+	light1.position[1] = tmp.y;
+	light1.position[2] = tmp.z;
+	rt3d::setLightPos(shaderProgram_phong_monochrome, glm::value_ptr(tmp));
+	// draw a cube for the moving light
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(movingLightPos.x, movingLightPos.y, movingLightPos.z));
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.0f, 1.0f, 1.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), 3.14f, glm::vec3(0.5f, 0.5f, 0.5f));
+	rt3d::setUniformMatrix4fv(shaderProgram_phong_monochrome, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
+	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
+	mvStack.pop();
+
+	rt3d::setUniformMatrix4fv(shaderProgram_phong_monochrome, "projection", glm::value_ptr(projection));
+
+	uniformIndex = glGetUniformLocation(shaderProgram_phong_monochrome,"attConst");
+	glUniform1f(uniformIndex, attConstant);
+
+	//Set-up
+	glm::vec4 v_spotDir = glm::vec4(0.0, -1.0, 0.0, 1.0);
+	glm::vec4 tmp_s = v_spotDir * mvStack.top();
+	rt3d::setSpotLightPos(shaderProgram_phong_monochrome, glm::value_ptr(tmp_s));
+	//Draw the first bunny
+	glUseProgram(shaderProgram_phong_monochrome);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(0, 0, 0));
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(80.0f, 80.0f, 80.0f));
+	rt3d::setUniformMatrix4fv(shaderProgram_phong_monochrome, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
+	rt3d::drawIndexedMesh(meshObjects[1], toonIndexCount, GL_TRIANGLES);
+	mvStack.pop();
+
+	//Draw the second bunny
+	glUseProgram(shaderProgram_phong_monochrome);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(100, 0, 0));
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(80.0f, 80.0f, 80.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), 3.14f, glm::vec3(0, 0.3f, 0));
+	rt3d::setUniformMatrix4fv(shaderProgram_phong_monochrome, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
+	rt3d::drawIndexedMesh(meshObjects[1], toonIndexCount, GL_TRIANGLES);
+	mvStack.pop();
+
+
+	//Draw the third bunny
+	glUseProgram(shaderProgram_phong_monochrome);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(60, 0, 50));
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(80.0f, 80.0f, 80.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), 3.14f, glm::vec3(0, 0.5f, 0));
+	rt3d::setUniformMatrix4fv(shaderProgram_phong_monochrome, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
+	rt3d::drawIndexedMesh(meshObjects[1], toonIndexCount, GL_TRIANGLES);
+	mvStack.pop();
+
+
+	//Draw the ground
+	glUseProgram(shaderProgram_phong_monochrome);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), glm::vec3(0, 2, 0));
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(300.0f, 1.0f, 300.0f));
+	rt3d::setUniformMatrix4fv(shaderProgram_phong_monochrome, "modelview", glm::value_ptr(mvStack.top()));
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material0);
+	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
+	mvStack.pop();
+
 
 	// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

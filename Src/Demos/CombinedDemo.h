@@ -44,7 +44,7 @@ private:
 	GLuint basicShaderProgram;
 	GLuint skyboxProgram;
 	GLuint reflectRefractProgram;
-	GLuint shaderProgram;
+	GLuint shaderProgram_phong_monochrome;
 	GLuint lightProgram;
 
 	GLfloat ratioR = 1.35;
@@ -66,8 +66,17 @@ private:
 		{1.0f, 1.0f, 1.0f, 1.0f}, // specular
 		{-5.0f, 2.0f, 2.0f, 1.0f}  // position
 	};
-
 	glm::vec4 lightPos = glm::vec4(-5.0f, 2.0f, 2.0f, 1.0f); //light position
+
+	rt3d::lightStruct light1 = {
+	{0.3f, 0.3f, 0.3f, 0.0f}, // ambient
+	{1.0f, 1.0f, 1.0f, 0.0f}, // diffuse
+	{1.0f, 1.0f, 1.0f, 0.0f}, // specular
+	{-10.0f, 10.0f, 10.0f, 1.0f},  // position
+	{0.8f} //Cutoff Angle
+	};
+	glm::vec4 movingLightPos = glm::vec4(-10.0f, 100.0f, 10.0f, 1.0f); //light position
+
 
 	rt3d::materialStruct material0 = {
 		{0.2f, 0.4f, 0.2f, 1.0f}, // ambient
@@ -81,6 +90,13 @@ private:
 		{0.8f, 0.8f, 0.8f, 1.0f}, // specular
 		1.0f  // shininess
 	};
+	rt3d::materialStruct materialGlossy = {
+		{0.2f, 0.2f, 0.2f, 0.2f}, // ambient
+		{3.0f, 3.0f, 3.0f, 3.0f}, // diffuse
+		{4.0f, 4.0f, 4.0f, 1.0f}, // specular
+		1.0f  // shininess
+	};
+
 
 	// light attenuation
 	float attConstant = 1.0f;

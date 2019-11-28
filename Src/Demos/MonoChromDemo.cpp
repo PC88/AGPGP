@@ -242,7 +242,6 @@ void MonoChromDemo::Render()
 	rt3d::drawIndexedMesh(meshObjects[0], meshIndexCount, GL_TRIANGLES);
 	mvStack.pop();
 
-	//glUseProgram(shaderProgram1stBunny);
 	rt3d::setUniformMatrix4fv(shaderProgram_phong_monochrome, "projection", glm::value_ptr(projection));
 
 	int uniformIndex =
@@ -308,8 +307,6 @@ void MonoChromDemo::Render()
 
 	// remember to use at least one pop operation per push...
 	mvStack.pop(); // initial matrix
-	glDepthMask(GL_TRUE);
-
 }
 
 glm::vec3 MonoChromDemo::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
