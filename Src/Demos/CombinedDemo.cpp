@@ -9,7 +9,7 @@ CombinedDemo::CombinedDemo()
 	glEnable(GL_MULTISAMPLE);
 
 	// initialize the shaders
-	shaderProgram = rt3d::initShaders("Res\\Shaders\\phong-tex.vert", "Res\\Shaders\\phong-tex.frag");
+	shaderProgram = rt3d::initShaders("Res\\Shaders\\phong-tex-monochrome.vert", "Res\\Shaders\\phong-tex-monochrome.frag");
 	rt3d::setLight(shaderProgram, light0);
 	rt3d::setMaterial(shaderProgram, material0);
 	// set light attenuation shader uniforms

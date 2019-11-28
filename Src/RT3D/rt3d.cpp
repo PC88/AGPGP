@@ -247,6 +247,18 @@ void setLight(const GLuint program, const lightStruct light) {
 	glUniform4fv(uniformIndex, 1, light.position);
 }
 
+void setCutOffLight(const GLuint program, const lightStructCutOff light) {
+	// pass in light data to shader
+	int uniformIndex = glGetUniformLocation(program, "light.ambient");
+	glUniform4fv(uniformIndex, 1, light.ambient);
+	uniformIndex = glGetUniformLocation(program, "light.diffuse");
+	glUniform4fv(uniformIndex, 1, light.diffuse);
+	uniformIndex = glGetUniformLocation(program, "light.specular");
+	glUniform4fv(uniformIndex, 1, light.specular);
+	uniformIndex = glGetUniformLocation(program, "lightPosition");
+	glUniform4fv(uniformIndex, 1, light.position);
+	uniformIndex = glGetUniformLocation(program, "cutOff");
+}
 
 void setMaterial(const GLuint program, const materialStruct material) {
 	// pass in material data to shader 
