@@ -256,7 +256,7 @@ void setCutOffLight(const GLuint program, const lightStructCutOff light) {
 	uniformIndex = glGetUniformLocation(program, "light.specular");
 	glUniform4fv(uniformIndex, 1, light.specular);
 	uniformIndex = glGetUniformLocation(program, "lightPosition");
-	glUniform4fv(uniformIndex, 1, light.position);
+	glUniform1f(uniformIndex, light.cutOff);
 	uniformIndex = glGetUniformLocation(program, "cutOff");
 }
 
@@ -270,6 +270,12 @@ void setMaterial(const GLuint program, const materialStruct material) {
 	glUniform4fv(uniformIndex, 1, material.specular);
 	uniformIndex = glGetUniformLocation(program, "material.shininess");
 	glUniform1f(uniformIndex, material.shininess);
+}
+
+void setSpotLightPos(const GLuint program, const GLfloat* lightPos)
+{
+	int uniformIndex = glGetUniformLocation(program, "spotDir");
+	glUniform4fv(uniformIndex, 1, lightPos);
 }
 
 void drawMesh(const GLuint mesh, const GLuint numVerts, const GLuint primitive) {

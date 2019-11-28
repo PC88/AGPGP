@@ -58,7 +58,7 @@ namespace rt3d {
 	void setLight(const GLuint program, const lightStruct light);
 	void setLightPos(const GLuint program, const GLfloat *lightPos);
 	void setMaterial(const GLuint program, const materialStruct material);
-
+	void setSpotLightPos(const GLuint program, const GLfloat* lightPos);
 	void drawMesh(const GLuint mesh, const GLuint numVerts, const GLuint primitive); 
 	void drawIndexedMesh(const GLuint mesh, const GLuint indexCount, const GLuint primitive);
 

@@ -7,7 +7,7 @@
 
 MonoChromDemo::MonoChromDemo()
 {
-	shaderProgram_phong_monochrome = rt3d::initShaders("Res\\Shaders\\phong - tex.vert", "Res\\Shaders\\phong-tex.frag");
+	shaderProgram_phong_monochrome = rt3d::initShaders("Res\\Shaders\\phong-tex-monochrome.vert", "Res\\Shaders\\phong-tex-monochrome.frag");
 	rt3d::setCutOffLight(shaderProgram_phong_monochrome, light1);
 	rt3d::setMaterial(shaderProgram_phong_monochrome, material0);
 	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
@@ -19,7 +19,7 @@ MonoChromDemo::MonoChromDemo()
 	vector<GLfloat> tex_coords;
 	vector<GLuint> indices;
 
-	rt3d::loadObj("Res\\Models\\cube.obj", verts, norms, tex_coords, indices);
+	rt3d::loadObj("Res\\Models\\bunny-5000.obj", verts, norms, tex_coords, indices);
 	toonIndexCount = indices.size();
 	meshObjects[1] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), nullptr, toonIndexCount, indices.data());
 
@@ -44,15 +44,15 @@ MonoChromDemo::MonoChromDemo()
 
 
 	// start load skybox
-	skyboxProgram = rt3d::initShaders("Res\\Shaders\\textured.vert", "Res\\Shaders\\textured.vert");
+	skyboxProgram = rt3d::initShaders("Res\\Shaders\\textured.vert", "Res\\Shaders\\textured.frag");
 	rt3d::loadObj("Res\\Models\\cube.obj", verts, norms, tex_coords, indices);
 	size = indices.size();
 	meshIndexCount2 = size;
 	meshObjects[2] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), tex_coords.data(), size, indices.data());
-	skybox[0] = rt3d::loadBitmap("Res\\moon_skybox\\moondust_rt.bmp");
-	skybox[1] = rt3d::loadBitmap("Res\\moon_skybox\\moondust_lf.bmp");
-	skybox[2] = rt3d::loadBitmap("Res\\moon_skybox\\moondust_ft.bmp");
-	skybox[3] = rt3d::loadBitmap("Res\\moon_skybox\\moondust_bk.bmp");
+	skybox[0] = rt3d::loadBitmap("Res\\images\\moon_skybox\\moondust_rt.bmp");
+	skybox[1] = rt3d::loadBitmap("Res\\images\\moon_skybox\\moondust_lf.bmp");
+	skybox[2] = rt3d::loadBitmap("Res\\images\\moon_skybox\\moondust_ft.bmp");
+	skybox[3] = rt3d::loadBitmap("Res\\images\\moon_skybox\\moondust_bk.bmp");
 	// end load skybox
 
 	glEnable(GL_DEPTH_TEST);
@@ -252,8 +252,8 @@ void MonoChromDemo::Render()
 	//Set-up
 	glm::vec4 v_spotDir = glm::vec4(0.0, -1.0, 0.0, 1.0);
 	glm::vec4 tmp_s = v_spotDir * mvStack.top();
-	rt3d::setLightPos(shaderProgram_phong_monochrome, glm::value_ptr(tmp_s));
-	//rt3d::setSpotLightPos(shaderProgram_phong_monochrome, glm::value_ptr(tmp_s));
+	//rt3d::setLightPos(shaderProgram_phong_monochrome, glm::value_ptr(tmp_s));
+	rt3d::setSpotLightPos(shaderProgram_phong_monochrome, glm::value_ptr(tmp_s));
 	//Draw the first bunny
 	glUseProgram(shaderProgram_phong_monochrome);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
