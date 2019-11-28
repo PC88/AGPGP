@@ -256,8 +256,8 @@ void setCutOffLight(const GLuint program, const lightStructCutOff light) {
 	uniformIndex = glGetUniformLocation(program, "light.specular");
 	glUniform4fv(uniformIndex, 1, light.specular);
 	uniformIndex = glGetUniformLocation(program, "lightPosition");
-	glUniform1f(uniformIndex, light.cutOff);
-	uniformIndex = glGetUniformLocation(program, "cutOff");
+	glUniform1f(uniformIndex, light.cutOff );
+	uniformIndex = glGetUniformLocation(program, "light.cutOff");
 }
 
 void setMaterial(const GLuint program, const materialStruct material) {
