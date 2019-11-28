@@ -24,14 +24,6 @@ namespace rt3d {
 		float cutOff;
 	};
 
-	struct lightStructCutOff {
-		GLfloat ambient[4];
-		GLfloat diffuse[4];
-		GLfloat specular[4];
-		GLfloat position[4];
-		float cutOff;
-	};
-
 	struct materialStruct {
 		GLfloat ambient[4];
 		GLfloat diffuse[4];
@@ -55,7 +47,6 @@ namespace rt3d {
 	GLuint createColourMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat* colours);
 
 	void setUniformMatrix4fv(const GLuint program, const char* uniformName, const GLfloat *data);
-	void setCutOffLight(const GLuint program, const lightStructCutOff light);
 	void setLight(const GLuint program, const lightStruct light);
 	void setLightPos(const GLuint program, const GLfloat *lightPos);
 	void setMaterial(const GLuint program, const materialStruct material);
