@@ -35,7 +35,9 @@ namespace rt3d {
 		int n;
 	};
     
-	int determineFaceFormat(std::string fString) {
+	int determineFaceFormat(std::string fString) 
+	{
+		PROFILE_FUNCTION();
 		unsigned int delim1 = fString.find('/');
 		if (delim1 == std::string::npos)
 			return FORMAT_V;		
@@ -47,7 +49,9 @@ namespace rt3d {
 		return FORMAT_VTN;
 	}
     
-	faceIndex getFace(std::string fString, int fFormat) {
+	faceIndex getFace(std::string fString, int fFormat) 
+	{
+		PROFILE_FUNCTION();
 		// still need to sort out how to handle v/t properly, as well as v//n
 		int delim1 = fString.find('/');
 		int delim2 = fString.rfind('/');
@@ -81,7 +85,9 @@ namespace rt3d {
 	void addVertex(std::string fString1, std::map<std::string,GLuint> &indexMap, 
                    std::vector<position> &inVerts, std::vector<position> &inCoords, std::vector<position> &inNorms, 
                    std::vector<GLfloat> &verts, std::vector<GLfloat> &texcoords, std::vector<GLfloat> &norms, 
-                   std::vector<GLuint> &indices, int fFormat, int &index) {
+                   std::vector<GLuint> &indices, int fFormat, int &index) 
+	{
+		PROFILE_FUNCTION();
         
 		auto itr = indexMap.find(fString1);
 		if (itr == indexMap.end()) {
