@@ -10,6 +10,7 @@
 // Will not generate normals if the model is missing them - or any other missing data
 #include "rt3dObjLoader.h"
 #include "rt3d.h"
+#include "Instrumentor.h"
 #include <iostream>
 #include <sstream>
 #include <map>
@@ -109,7 +110,7 @@ namespace rt3d {
     
 	void loadObj(const char* filename, std::vector<GLfloat> &verts, std::vector<GLfloat> &norms,
                  std::vector<GLfloat> &texcoords, std::vector<GLuint> &indices) {
-        
+		PROFILE_FUNCTION();
 		GLint fileLength;
 		char *fileSource = loadFile(filename, fileLength);
         

@@ -1,5 +1,6 @@
 #include "rt3d.h"
 #include <map>
+#include "Instrumentor.h"
 
 using namespace std;
 
@@ -18,7 +19,9 @@ struct vaoBuffers {
 static map<GLuint, GLuint *> vertexArrayMap;
 
 // Something went wrong - print error message and quit
-void exitFatalError(const char *message) {
+void exitFatalError(const char *message) 
+{
+	PROFILE_FUNCTION();
     cout << message << " ";
     exit(1);
 }
@@ -26,7 +29,9 @@ void exitFatalError(const char *message) {
 // loadFile - loads text file from file fname as a char* 
 // Allocates memory - so remember to delete after use
 // size of file returned in fSize
-char* loadFile(const char *fname, GLint &fSize) {
+char* loadFile(const char *fname, GLint &fSize)
+{
+	PROFILE_FUNCTION();
 	int size;
 	char * memblock;
 
@@ -54,7 +59,9 @@ char* loadFile(const char *fname, GLint &fSize) {
 
 // printShaderError
 // Display (hopefully) useful error messages if shader fails to compile or link
-void printShaderError(const GLint shader) {
+void printShaderError(const GLint shader) 
+{
+	PROFILE_FUNCTION();
 	int maxLength = 0;
 	int logLength = 0;
 	GLchar *logMessage;
@@ -78,7 +85,9 @@ void printShaderError(const GLint shader) {
 }
 
 
-GLuint initShaders(const char *vertFile, const char *fragFile) {
+GLuint initShaders(const char *vertFile, const char *fragFile) 
+{
+	PROFILE_FUNCTION();
 	GLuint p, f, v;
 
 	char *vs,*fs;
@@ -134,7 +143,9 @@ GLuint initShaders(const char *vertFile, const char *fragFile) {
 }
 
 GLuint createMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat* colours, 
-	const GLfloat* normals, const GLfloat* texcoords, const GLuint indexCount, const GLuint* indices) {
+	const GLfloat* normals, const GLfloat* texcoords, const GLuint indexCount, const GLuint* indices) 
+{
+	PROFILE_FUNCTION();
 	GLuint VAO;
 	// generate and set up a VAO for the mesh
 	glGenVertexArrays(1, &VAO);
@@ -207,36 +218,50 @@ GLuint createMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat*
 }
 
 GLuint createMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat* colours, 
-	const GLfloat* normals, const GLfloat* texcoords) {
+	const GLfloat* normals, const GLfloat* texcoords) 
+{
+	PROFILE_FUNCTION();
 	return createMesh(numVerts, vertices, colours, normals, texcoords, 0, nullptr);
 }
 
-GLuint createMesh(const GLuint numVerts, const GLfloat* vertices) {
+GLuint createMesh(const GLuint numVerts, const GLfloat* vertices) 
+{
+	PROFILE_FUNCTION();
 	return createMesh(numVerts, vertices, nullptr, nullptr, nullptr);
 }
 
-GLuint createColourMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat* colours) {
+GLuint createColourMesh(const GLuint numVerts, const GLfloat* vertices, const GLfloat* colours)
+{
+	PROFILE_FUNCTION();
 	return createMesh(numVerts, vertices, colours, nullptr, nullptr);
 }
 
-void setUniformMatrix4fv(const GLuint program, const char* uniformName, const GLfloat *data) {
+void setUniformMatrix4fv(const GLuint program, const char* uniformName, const GLfloat *data) 
+{
+	PROFILE_FUNCTION();
 	int uniformIndex = glGetUniformLocation(program, uniformName);
 	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, data); 
 }
 
 
-void setLightPos(const GLuint program, const GLfloat *lightPos) {
+void setLightPos(const GLuint program, const GLfloat *lightPos) 
+{
+	PROFILE_FUNCTION();
 	int uniformIndex = glGetUniformLocation(program, "lightPosition");
 	glUniform4fv(uniformIndex, 1, lightPos);
 }
 
-void setProjection(const GLuint program, const GLfloat *data) {
+void setProjection(const GLuint program, const GLfloat *data) 
+{
+	PROFILE_FUNCTION();
 	int uniformIndex = glGetUniformLocation(program, "projection");
 	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, data); 
 }
 
 
-void setLight(const GLuint program, const lightStruct light) {
+void setLight(const GLuint program, const lightStruct light) 
+{
+	PROFILE_FUNCTION();
 	// pass in light data to shader
 	int uniformIndex = glGetUniformLocation(program, "light.ambient");
 	glUniform4fv(uniformIndex, 1, light.ambient);
@@ -250,7 +275,9 @@ void setLight(const GLuint program, const lightStruct light) {
 	glUniform1f(uniformIndex, light.cutOff);
 }
 
-void setMaterial(const GLuint program, const materialStruct material) {
+void setMaterial(const GLuint program, const materialStruct material) 
+{
+	PROFILE_FUNCTION();
 	// pass in material data to shader 
 	int uniformIndex = glGetUniformLocation(program, "material.ambient");
 	glUniform4fv(uniformIndex, 1, material.ambient);
@@ -263,12 +290,15 @@ void setMaterial(const GLuint program, const materialStruct material) {
 }
 
 
-void setSpotLightPos(const GLuint program, const GLfloat* lightPos) {
+void setSpotLightPos(const GLuint program, const GLfloat* lightPos) 
+{
+	PROFILE_FUNCTION();
 	int uniformIndex = glGetUniformLocation(program, "spotDir");
 	glUniform4fv(uniformIndex, 1, lightPos);
 }
 
 void drawMesh(const GLuint mesh, const GLuint numVerts, const GLuint primitive) {
+	PROFILE_FUNCTION();
 	glBindVertexArray(mesh);	// Bind mesh VAO
 	glDrawArrays(primitive, 0, numVerts);	// draw first vertex array object
 	glBindVertexArray(0);
@@ -277,6 +307,7 @@ void drawMesh(const GLuint mesh, const GLuint numVerts, const GLuint primitive) 
 
 void drawIndexedMesh(const GLuint mesh, const GLuint indexCount, const GLuint primitive) 
 {
+	PROFILE_FUNCTION();
 	glBindVertexArray(mesh);	// Bind mesh VAO
 	glDrawElements(primitive, indexCount,  GL_UNSIGNED_INT, 0);	// draw VAO 
 	glBindVertexArray(0);
@@ -392,6 +423,7 @@ SDL_Window* setupRC(SDL_GLContext &context)
 // lots of room for improvement - and better error checking!
 GLuint loadBitmap(const char *fname)
 {
+	PROFILE_FUNCTION();
 	GLuint texID;
 	glGenTextures(1, &texID); // generate texture ID
 
@@ -433,6 +465,7 @@ GLuint loadBitmap(const char *fname)
 // lots of room for improvement - and better error checking!
 GLuint loadCubeMap(const char *fname[6], GLuint *texID)
 {
+	PROFILE_FUNCTION();
 	glGenTextures(1, texID); // generate texture ID
 	GLenum sides[6] = { GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 						GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
