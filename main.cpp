@@ -83,10 +83,10 @@ int main(int argc, char *argv[])
 	currentDemo = demoManager;
 
 	/// group project Demos ///
-	demoManager->RegisterDemo<ThreadedKernelDemo>("Threaded kernel Demo");
-	demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
-	demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
-	demoManager->RegisterDemo<TestDemo>("Test Demo");
+	//demoManager->RegisterDemo<ThreadedKernelDemo>("kernel Demo");
+	//demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
+	//demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
+	//demoManager->RegisterDemo<TestDemo>("Test Demo");
 	demoManager->RegisterDemo<CombinedDemo>("Combined Demo");
 
 
