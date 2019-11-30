@@ -89,6 +89,9 @@
     <ClInclude Include="Src\Profiler\Instrumentor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\SDLContextHolder\SDLContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -149,6 +152,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Demos\CombinedDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SDLContextHolder\SDLContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

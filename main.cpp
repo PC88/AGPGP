@@ -27,6 +27,7 @@
 // Combined Demo
 #include "CombinedDemo.h"
 
+#include "SDLContainer.h"
 // general timer
 #include "Timer.h"
 #include "HPTimer.h"
@@ -42,14 +43,23 @@
 // Program entry point - SDL manages the actual WinMain entry point for us
 int main(int argc, char *argv[]) 
 {
+	
     SDL_Window* hWindow;						// window handle
     SDL_GLContext glContext;					// OpenGL context handle
 	SDL_GLContext threadConext;
 	hWindow = rt3d::setupRC(glContext, threadConext);         // Create window and render context 
-	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+	//SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 	// Required on Windows *only* init GLEW to access OpenGL beyond 1.1
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
+
+	SDLContainer::instance().mainContext = &glContext;
+	SDLContainer::instance().threadContext = &threadConext;
+	SDLContainer::instance().window = hWindow;
+	//// stor contexts for threading
+	//SDLContainer::window = hWindow;
+	//SDLContainer::mainContext = glContext;
+	//SDLContainer::threadContext = threadConext;
 
 
 	if (GLEW_OK != err) 

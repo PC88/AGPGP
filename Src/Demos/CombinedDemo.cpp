@@ -3,6 +3,7 @@
 #include "rt3dObjLoader.h"
 #include "Instrumentor.h"
 #include <utility>
+#include "SDLContainer.h"
 
 CombinedDemo::CombinedDemo()
 {
@@ -10,14 +11,22 @@ CombinedDemo::CombinedDemo()
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
 
-	// Multi-Thread section
-/*
-	std::thread shaderWorker (&CombinedDemo::LoadShaders2, this, std::ref(basicShaderProgram), std::ref(light0), std::ref(material0),
-		std::ref(screenTexShaderProgram), std::ref(lightProgram),
-		std::ref(shaderProgram_phong_monochrome), std::ref(light1), std::ref(material1));
+	//SDL_GL_MakeCurrent(SDLContainer::instance().window, SDLContainer::instance().threadContext);
+	//// Multi-Thread section
+	//GLsync fenceId = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+	//GLenum result = 0;
+	//while (true)
+	//{
+	//	glClientWaitSync(fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, GLuint64(5000000000)); //5 Second timeout
+	//	if (result != GL_TIMEOUT_EXPIRED) break; //we ignore timeouts and wait until all OpenGL commands are processed!
+	//}
 
+	////std::thread shaderWorker(&CombinedDemo::LoadShaders2, this, std::ref(basicShaderProgram), std::ref(light0), std::ref(material0),
+	//	//std::ref(screenTexShaderProgram), std::ref(lightProgram),
+	//	//std::ref(shaderProgram_phong_monochrome), std::ref(light1), std::ref(material1));
 
-	shaderWorker.join();*/
+	//shaderWorker = std::thread(&CombinedDemo::LoadShaders, this);
+	//shaderWorker.join();
 
 	//skyboxWorker = std::thread(&CombinedDemo::LoadSkybox, this);
 	//skyboxWorker.join();

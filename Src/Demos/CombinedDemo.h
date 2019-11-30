@@ -42,11 +42,11 @@ public:
 	void LoadSkybox();
 
 private:
-	//std::thread shaderWorker;
-	//std::thread skyboxWorker;
-	//std::thread modelWorker;
-	//std::thread quadWorker;
-	//std::thread fboWorker;
+	std::thread shaderWorker;
+	std::thread skyboxWorker;
+	std::thread modelWorker;
+	std::thread quadWorker;
+	std::thread fboWorker;
 
 private:
 
