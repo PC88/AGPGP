@@ -4,14 +4,24 @@
 #include "Instrumentor.h"
 #include <utility>
 #include "SDLContainer.h"
+#include "SDL_thread.h"
+
+
+//int threadHelper(void *ptr)
+//{
+//	CombinedDemo *worker = static_cast<CombinedDemo *>(ptr);
+//	worker->LoadShaders(nullptr);
+//	return 0;
+//}
 
 CombinedDemo::CombinedDemo()
 {
 	PROFILE_FUNCTION();
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
-
-	//SDL_GL_MakeCurrent(SDLContainer::instance().window, SDLContainer::instance().threadContext);
+	/*
+		SDL_GLContext temp = *SDLContainer::instance().threadContext;
+		SDL_GL_MakeCurrent(SDLContainer::instance().window, temp);*/
 	//// Multi-Thread section
 	//GLsync fenceId = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 	//GLenum result = 0;
@@ -27,6 +37,23 @@ CombinedDemo::CombinedDemo()
 
 	//shaderWorker = std::thread(&CombinedDemo::LoadShaders, this);
 	//shaderWorker.join();
+	//SDL_Thread* thread;
+	//int returnValue;
+	//CombinedDemo* temp1 = this;
+
+	//thread = SDL_CreateThread(threadHelper, "temp", temp1);
+	//if (NULL == thread)
+	//{
+	//	printf("SDL_CreateThread failed: %s\n", SDL_GetError());
+	//}
+	//else
+	//{
+	//	SDL_WaitThread(thread, &returnValue);
+	//	printf("Thread returned value: %d\n", returnValue);
+	//}
+
+	//SDL_GL_MakeCurrent(SDLContainer::instance().window, NULL);
+	//SDL_GL_MakeCurrent(SDLContainer::instance().window, *SDLContainer::instance().mainContext);
 
 	//skyboxWorker = std::thread(&CombinedDemo::LoadSkybox, this);
 	//skyboxWorker.join();
@@ -433,6 +460,7 @@ void CombinedDemo::LoadShaders()
 	rt3d::setLight(shaderProgram_phong_monochrome, light1);
 	rt3d::setMaterial(shaderProgram_phong_monochrome, material0);
 	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
+	//return 0;
 }
 
 void CombinedDemo::LoadShaders2(GLuint & BSP, rt3d::lightStruct & L0, rt3d::materialStruct & M0, GLuint & STSP, GLuint & LP, GLuint & PMSP, rt3d::lightStruct & L1, rt3d::materialStruct & M1)
