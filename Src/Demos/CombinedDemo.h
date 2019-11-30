@@ -8,6 +8,7 @@
 #include "vector"
 #include "rt3dObjLoader.h"
 #include "imgui.h"
+#include <thread>
 
 #define DEG_TO_RADIAN 0.017453293
 
@@ -29,11 +30,28 @@ public:
 
 	glm::vec3 moveForwardBack(glm::vec3 pos, GLfloat angle, GLfloat d);
 
-	void LoadFBO();
 
+	// functions to be threaded
+	void LoadFBO();
 	void SetUpQuad();
+	void LoadShaders();
+	// test
+	void LoadShaders2(GLuint& BSP, rt3d::lightStruct& L0, rt3d::materialStruct& M0, GLuint& STSP, GLuint& LP, 
+		GLuint& PMSP, rt3d::lightStruct& L1, rt3d::materialStruct& M1  );
+	void LoadModels();
+	void LoadSkybox();
 
 private:
+	//std::thread shaderWorker;
+	//std::thread skyboxWorker;
+	//std::thread modelWorker;
+	//std::thread quadWorker;
+	//std::thread fboWorker;
+
+private:
+
+
+
 	GLuint meshIndexCount = 0;
 	GLuint toonIndexCount = 0;
 	GLuint meshObjects[2];

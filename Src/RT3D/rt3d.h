@@ -61,7 +61,7 @@ namespace rt3d {
 
 	GLuint loadCubeMap(const char *fname[6], GLuint *texID);
 
-	SDL_Window* setupRC(SDL_GLContext &context);
+	SDL_Window* setupRC(SDL_GLContext &context, SDL_GLContext& context2);
 
 	GLuint textToTexture(const char* str, GLuint textID, TTF_Font* textFont);
 }

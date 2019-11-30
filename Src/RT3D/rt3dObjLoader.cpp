@@ -90,16 +90,19 @@ namespace rt3d {
 		PROFILE_FUNCTION();
         
 		auto itr = indexMap.find(fString1);
-		if (itr == indexMap.end()) {
+		if (itr == indexMap.end()) 
+		{
 			faceIndex f = getFace(fString1, fFormat);
 			verts.push_back(inVerts[f.v].x);
 			verts.push_back(inVerts[f.v].y);
 			verts.push_back(inVerts[f.v].z);
-			if (fFormat < FORMAT_VN) {
+			if (fFormat < FORMAT_VN) 
+			{
 				texcoords.push_back(inCoords[f.t].x);
 				texcoords.push_back(inCoords[f.t].y);
 			}
-			if (fFormat > FORMAT_VT) {
+			if (fFormat > FORMAT_VT) 
+			{
 				norms.push_back(inNorms[f.n].x);
 				norms.push_back(inNorms[f.n].y);
 				norms.push_back(inNorms[f.n].z);
@@ -107,7 +110,8 @@ namespace rt3d {
 			indexMap.insert(std::pair<std::string, GLuint>(fString1, index)); 
 			indices.push_back(index++);
 		}
-		else {
+		else 
+		{
 			indices.push_back( itr->second );
 		}
 	}
@@ -148,13 +152,16 @@ namespace rt3d {
         
 		std::cout << "started parsing obj image..." << std::endl;
         
-		while (fileStream.good()) {
+		while (fileStream.good()) 
+		{
 			//fileStream.getline(line, 256);
 			fileStream >> lineHeader;
-			switch (lineHeader[0]) {
+			switch (lineHeader[0]) 
+			{
                 case 'v':
                     if ( lineHeader.length() > 1)
-                        switch (lineHeader[1]) {
+                        switch (lineHeader[1]) 
+						{
                             case 't': 
                                 fileStream >> tmp.x >> tmp.y;
                                 inCoords.push_back(tmp);
@@ -166,7 +173,8 @@ namespace rt3d {
                             default:
                                 break;
                         }
-                    else {
+                    else 
+					{
                         fileStream >> tmp.x >> tmp.y >> tmp.z;
                         inVerts.push_back(tmp);
                     }
@@ -175,12 +183,14 @@ namespace rt3d {
                     fileStream >> fString1 >> fString2 >> fString3;
                     if (!fFormat)
                         fFormat = determineFaceFormat(fString1);
-                    if (fFormat > FORMAT_V) {
+                    if (fFormat > FORMAT_V) 
+					{
                         addVertex(fString1, indexMap, inVerts, inCoords, inNorms, verts, texcoords, norms, indices, fFormat, iCount);
                         addVertex(fString2, indexMap, inVerts, inCoords, inNorms, verts, texcoords, norms, indices, fFormat, iCount);
                         addVertex(fString3, indexMap, inVerts, inCoords, inNorms, verts, texcoords, norms, indices, fFormat, iCount);
                     }
-                    else {
+                    else 
+					{
                         buffer << fString1 << " " << fString2 << " " << fString3;
                         buffer >> a >> b >> c;
                         buffer.clear();
@@ -199,18 +209,15 @@ namespace rt3d {
 		}
         
 		// copy vertex data to output vectors in case only single index was provided....
-		if (fFormat == FORMAT_V) {
-			for (int v = 0; v < inVerts.size(); v++) {
+		if (fFormat == FORMAT_V) 
+		{
+			for (int v = 0; v < inVerts.size(); v++) 
+			{
 				verts.push_back(inVerts[v].x);
 				verts.push_back(inVerts[v].y);
 				verts.push_back(inVerts[v].z);			
 			}
 		}
-        
-		std::cout << "finished parsing obj image..." << std::endl;
-        
-        
+		std::cout << "finished parsing obj image..." << std::endl;   
 	}
-    
-    
 }

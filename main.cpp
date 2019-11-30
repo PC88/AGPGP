@@ -35,16 +35,22 @@
 //instrumentor and its timer
 #include "Instrumentor.h"
 
+// global for expediency
+//SDL_GLContext ThreadContext;
+
+
 // Program entry point - SDL manages the actual WinMain entry point for us
 int main(int argc, char *argv[]) 
 {
     SDL_Window* hWindow;						// window handle
     SDL_GLContext glContext;					// OpenGL context handle
-	hWindow = rt3d::setupRC(glContext);         // Create window and render context 
-
+	SDL_GLContext threadConext;
+	hWindow = rt3d::setupRC(glContext, threadConext);         // Create window and render context 
+	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 	// Required on Windows *only* init GLEW to access OpenGL beyond 1.1
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
+
 
 	if (GLEW_OK != err) 
 	{   
@@ -67,7 +73,7 @@ int main(int argc, char *argv[])
 	currentDemo = demoManager;
 
 	/// group project Demos ///
-	demoManager->RegisterDemo<ThreadedKernelDemo>("Sobel Threaded Demo");
+	demoManager->RegisterDemo<ThreadedKernelDemo>("Threaded kernel Demo");
 	demoManager->RegisterDemo<MonoChromDemo>("Mono Chrom Demo");
 	demoManager->RegisterDemo<ChromFresnelDemo>("Chrom Fresnel Demo");
 	demoManager->RegisterDemo<TestDemo>("Test Demo");
@@ -139,6 +145,7 @@ int main(int argc, char *argv[])
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
 
+	SDL_GL_DeleteContext(threadConext);
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(hWindow);
     SDL_Quit();

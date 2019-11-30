@@ -2,6 +2,7 @@
 #include "vector"
 #include "rt3dObjLoader.h"
 #include "Instrumentor.h"
+#include <utility>
 
 CombinedDemo::CombinedDemo()
 {
@@ -9,71 +10,31 @@ CombinedDemo::CombinedDemo()
 	// enable MSAA
 	glEnable(GL_MULTISAMPLE);
 
-	// init Basic shader
-	basicShaderProgram = rt3d::initShaders("Res\\Shaders\\BasicShader.vert", "Res\\Shaders\\BasicShader.frag");
-	rt3d::setLight(basicShaderProgram, light0);
-	rt3d::setMaterial(basicShaderProgram, material0);
+	// Multi-Thread section
+/*
+	std::thread shaderWorker (&CombinedDemo::LoadShaders2, this, std::ref(basicShaderProgram), std::ref(light0), std::ref(material0),
+		std::ref(screenTexShaderProgram), std::ref(lightProgram),
+		std::ref(shaderProgram_phong_monochrome), std::ref(light1), std::ref(material1));
 
-	// init the quad shader
-	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\KernelSharpen.vert", "Res\\Shaders\\KernelSharpen.frag");
-	lightProgram = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
 
-	//initialize shader
-	shaderProgram_phong_monochrome = rt3d::initShaders("Res\\Shaders\\phong-tex-mono.vert", "Res\\Shaders\\phong-tex-mono.frag");
-	rt3d::setLight(shaderProgram_phong_monochrome, light1);
-	rt3d::setMaterial(shaderProgram_phong_monochrome, material0);
-	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
+	shaderWorker.join();*/
 
-	// additional programs
-	const char* cubeTexFiles[6] =
-	{
-		"Res\\images\\hw_nightsky\\nightsky_bk.bmp", "Res\\images\\hw_nightsky\\nightsky_ft.bmp", "Res\\images\\hw_nightsky\\nightsky_rt.bmp",
-		"Res\\images\\hw_nightsky\\nightsky_lf.bmp", "Res\\images\\hw_nightsky\\nightsky_up.bmp", "Res\\images\\hw_nightsky\\nightsky_dn.bmp"
-	};
-	rt3d::loadCubeMap(cubeTexFiles, &skybox[0]);
+	//skyboxWorker = std::thread(&CombinedDemo::LoadSkybox, this);
+	//skyboxWorker.join();
 
-	skyboxProgram = rt3d::initShaders("Res\\Shaders\\cubeMap.vert", "Res\\Shaders\\cubeMap.frag");
-	reflectRefractProgram = rt3d::initShaders("Res\\Shaders\\reflect.vert", "Res\\Shaders\\reflect.frag");
-	rt3d::setLight(reflectRefractProgram, light0);
-	rt3d::setMaterial(reflectRefractProgram, material0);
+	//modelWorker = std::thread(&CombinedDemo::LoadModels, this);
+	//modelWorker.join();
 
-	GLuint uniformIndex = glGetUniformLocation(reflectRefractProgram, "cubeMap");
-	glUniform1i(uniformIndex, 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	//quadWorker = std::thread(&CombinedDemo::SetUpQuad, this);
+	//quadWorker.join();
 
-	/// LOAD MODELS ///
-	// load the cube model
-	vector<GLfloat> verts;
-	vector<GLfloat> norms;
-	vector<GLfloat> tex_coords;
-	vector<GLuint> indices;
-	rt3d::loadObj("Res\\Models\\cube.obj", verts, norms, tex_coords, indices);
-	meshIndexCount = indices.size();
-	textures[0] = rt3d::loadBitmap("Res\\images\\fabric.bmp");
-	meshObjects[0] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), tex_coords.data(), meshIndexCount, indices.data());
-	
-	verts.clear();
-	norms.clear();
-	tex_coords.clear();
-	indices.clear();
+	//fboWorker = std::thread(&CombinedDemo::LoadFBO, this);
+	//fboWorker.join();
 
-	rt3d::loadObj("Res\\Models\\bunny-5000.obj", verts, norms, tex_coords, indices);
-	toonIndexCount = indices.size();
-	meshObjects[1] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), nullptr, toonIndexCount, indices.data());
-
-	verts.clear();
-	norms.clear();
-	tex_coords.clear();
-	indices.clear();
-
-	// load another texture
-	textures[2] = rt3d::loadBitmap("Res\\images\\studdedmetal.bmp");
-
+	LoadShaders();
+	LoadSkybox();
+	LoadModels();
 	SetUpQuad();
-
 	LoadFBO();
 }
 
@@ -388,6 +349,7 @@ glm::vec3 CombinedDemo::moveForwardBack(glm::vec3 pos, GLfloat angle, GLfloat d)
 
 void CombinedDemo::LoadFBO()
 {
+	PROFILE_FUNCTION();
 
 	// Generate FBO, RBO & Texture handles
 	glGenFramebuffers(1, &fboID);
@@ -433,6 +395,7 @@ void CombinedDemo::LoadFBO()
 
 void CombinedDemo::SetUpQuad()
 {
+	PROFILE_FUNCTION();
 	glGenVertexArrays(1, &quadVAO);
 	glGenBuffers(1, &quadVBO);
 	glBindVertexArray(quadVAO);
@@ -442,4 +405,100 @@ void CombinedDemo::SetUpQuad()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+}
+
+void CombinedDemo::LoadShaders()
+{
+	PROFILE_FUNCTION();
+	// init Basic shader
+	basicShaderProgram = rt3d::initShaders("Res\\Shaders\\BasicShader.vert", "Res\\Shaders\\BasicShader.frag");
+	rt3d::setLight(basicShaderProgram, light0);
+	rt3d::setMaterial(basicShaderProgram, material0);
+
+	// init the quad shader
+	screenTexShaderProgram = rt3d::initShaders("Res\\Shaders\\KernelSharpen.vert", "Res\\Shaders\\KernelSharpen.frag");
+	lightProgram = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
+
+	//initialize shader
+	shaderProgram_phong_monochrome = rt3d::initShaders("Res\\Shaders\\phong-tex-mono.vert", "Res\\Shaders\\phong-tex-mono.frag");
+	rt3d::setLight(shaderProgram_phong_monochrome, light1);
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material0);
+	rt3d::setMaterial(shaderProgram_phong_monochrome, material1);
+}
+
+void CombinedDemo::LoadShaders2(GLuint & BSP, rt3d::lightStruct & L0, rt3d::materialStruct & M0, GLuint & STSP, GLuint & LP, GLuint & PMSP, rt3d::lightStruct & L1, rt3d::materialStruct & M1)
+{
+	PROFILE_FUNCTION();
+	// init Basic shader
+	BSP = rt3d::initShaders("Res\\Shaders\\BasicShader.vert", "Res\\Shaders\\BasicShader.frag");
+	rt3d::setLight(BSP, L0);
+	rt3d::setMaterial(BSP, M0);
+
+	// init the quad shader
+	STSP = rt3d::initShaders("Res\\Shaders\\KernelSharpen.vert", "Res\\Shaders\\KernelSharpen.frag");
+	LP = rt3d::initShaders("Res\\Shaders\\AmbientLight.vert", "Res\\Shaders\\AmbientLight.frag");
+
+	//initialize shader
+	PMSP = rt3d::initShaders("Res\\Shaders\\phong-tex-mono.vert", "Res\\Shaders\\phong-tex-mono.frag");
+	rt3d::setLight(PMSP, L1);
+	rt3d::setMaterial(PMSP, M0);
+	rt3d::setMaterial(PMSP, M1);
+
+}
+
+void CombinedDemo::LoadModels()
+{
+	PROFILE_FUNCTION();
+	/// LOAD MODELS ///
+	// load the cube model
+	vector<GLfloat> verts;
+	vector<GLfloat> norms;
+	vector<GLfloat> tex_coords;
+	vector<GLuint> indices;
+	rt3d::loadObj("Res\\Models\\cube.obj", verts, norms, tex_coords, indices);
+	meshIndexCount = indices.size();
+	textures[0] = rt3d::loadBitmap("Res\\images\\fabric.bmp");
+	meshObjects[0] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), tex_coords.data(), meshIndexCount, indices.data());
+
+	verts.clear();
+	norms.clear();
+	tex_coords.clear();
+	indices.clear();
+
+	rt3d::loadObj("Res\\Models\\bunny-5000.obj", verts, norms, tex_coords, indices);
+	toonIndexCount = indices.size();
+	meshObjects[1] = rt3d::createMesh(verts.size() / 3, verts.data(), nullptr, norms.data(), nullptr, toonIndexCount, indices.data());
+
+	verts.clear();
+	norms.clear();
+	tex_coords.clear();
+	indices.clear();
+
+	// load another texture
+	textures[2] = rt3d::loadBitmap("Res\\images\\studdedmetal.bmp");
+}
+
+void CombinedDemo::LoadSkybox()
+{
+	PROFILE_FUNCTION();
+
+	// additional programs
+	const char* cubeTexFiles[6] =
+	{
+		"Res\\images\\hw_nightsky\\nightsky_bk.bmp", "Res\\images\\hw_nightsky\\nightsky_ft.bmp", "Res\\images\\hw_nightsky\\nightsky_rt.bmp",
+		"Res\\images\\hw_nightsky\\nightsky_lf.bmp", "Res\\images\\hw_nightsky\\nightsky_up.bmp", "Res\\images\\hw_nightsky\\nightsky_dn.bmp"
+	};
+	rt3d::loadCubeMap(cubeTexFiles, &skybox[0]);
+
+	skyboxProgram = rt3d::initShaders("Res\\Shaders\\cubeMap.vert", "Res\\Shaders\\cubeMap.frag");
+	reflectRefractProgram = rt3d::initShaders("Res\\Shaders\\reflect.vert", "Res\\Shaders\\reflect.frag");
+	rt3d::setLight(reflectRefractProgram, light0);
+	rt3d::setMaterial(reflectRefractProgram, material0);
+
+	GLuint uniformIndex = glGetUniformLocation(reflectRefractProgram, "cubeMap");
+	glUniform1i(uniformIndex, 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
 }

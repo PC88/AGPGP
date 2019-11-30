@@ -389,7 +389,7 @@ GLuint textToTexture(const char * str, GLuint textID, TTF_Font* textFont)
 }
 
 // Set up rendering context
-SDL_Window* setupRC(SDL_GLContext &context)
+SDL_Window* setupRC(SDL_GLContext &context, SDL_GLContext& threadContext)
 {
 	SDL_Window * window;
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) // Initialize video
@@ -412,7 +412,11 @@ SDL_Window* setupRC(SDL_GLContext &context)
 	if (!window) // Check window was created OK
 		rt3d::exitFatalError("Unable to create window");
 
+	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+
 	context = SDL_GL_CreateContext(window); // Create opengl context and attach to window
+	threadContext = SDL_GL_CreateContext(window);
+
 	SDL_GL_SetSwapInterval(1); // set swap buffers to sync with monitor's vertical refresh rate
 
 
